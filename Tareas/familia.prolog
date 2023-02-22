@@ -1,7 +1,7 @@
 %                       Fundamentos de Inteligencia artificial      
 %                           Nadia Itzel Guerrero Sánchez      
 %
-%   Tarea #2 Árbol genealógico              
+%   Tarea #1 Árbol genealógico              
 %
 %   Representar el árbol genealógico que se encuentra en el siguiente sitio web: 
 %   https://simpsons.fandom.com/wiki/Simpson_family?file=Simpsons_possible_family_tree.jpg
