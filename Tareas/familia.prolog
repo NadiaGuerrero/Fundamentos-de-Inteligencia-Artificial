@@ -18,7 +18,7 @@
 %   - padre_de(<X>,<padre>).                    - madre_de(<X>,<madre>).
 %   - abuelo_de(<X>,<abuelo>).                  - abuela de(<X>,<abuela>).
 %   - hermano_de(<X>,<hermano>).                - hermana_de(<X>,<hermana>).
-%   - medio_hermano_de<X>,<medio hermano>).     - media_hermana_de<X>,<media hermana>).
+%   - medio_hermano_de(<X>,<medio hermano>).     - media_hermana_de<X>,<media hermana>).
 %   - tío_de(<X>,<tío>).                        - tía_de(<X>,<tía>). 
 %   - primo_de(<X>,<primo>).                    - prima_de(<X>,<prima>).
 %   - cuñado_de(<X>,<cuñado>).                  - cuñada_de(<X>,<cuñada>).
