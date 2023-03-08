@@ -22,7 +22,6 @@
 %                                                                       Representan a los palos de 
 %   - palo/1.       palo(<Palo>).               [♤, ♥, ♧, ♦]            la baraja inglesa: picas, 
 %                                                                       corazones, tréboles y diamantes.
-%
 
 %                                                                       Corresponden a los personajes 
 %   - personaje/1   personaje(<Personaje>).     [A, K, Q, J]            de las cartas más altas de la 
@@ -45,3 +44,21 @@ personaje(P):- member(P, ['A','K','Q','J']).
 valor(V):- between(2,10,V).
 
 comodín(C):- member(C,['JK1','JK2','JK3','JK4']).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       carta_personaje/2  carta_personaje(<Personaje>-<Palo>).
+%                           carta_valor/2  carta_valor(<Valor>-<Palo>).
+
+%   Son los dos tipos de cartas que hay en la baraja (además de los comodines), están conformadas
+%   por un par, donde el primer elemento es el valor o personaje de la carta y el segundo el palo.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+carta_personaje(Personaje-Palo):-
+    personaje(Personaje),
+    palo(Palo).
+
+carta_valor(Valor-Palo):-
+    valor(Valor),
+    palo(Palo).
