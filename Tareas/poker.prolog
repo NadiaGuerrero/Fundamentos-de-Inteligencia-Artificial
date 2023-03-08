@@ -4,7 +4,7 @@
 %   Tarea #2 Figuras de poker              
 %
 %   Construir un programa en prolog que reparta cartas a 4 jugadores de un mazo de 108 cartas,
-%   identifique la mejor figura en cada mano y los ordene descendenetemente, reportando el
+%   identifique la mejor figura en cada mano y los ordene descendentemente, reportando el
 %   resultado en la consola.
 %
 %   Predicados relevantes:
@@ -39,11 +39,11 @@
 
 palo(P) :- member(P, ['\u2664','\u2665','\u2667','\u2666']).
 
-personaje(P):- member(P, ['A','K','Q','J']).
+personaje(P) :- member(P, ['A','K','Q','J']).
 
-valor(V):- between(2,10,V).
+valor(V) :- between(2,10,V).
 
-comodín(C):- member(C,['JK1','JK2','JK3','JK4']).
+comodín(C) :- member(C,['JK1','JK2','JK3','JK4']).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -55,10 +55,31 @@ comodín(C):- member(C,['JK1','JK2','JK3','JK4']).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-carta_personaje(Personaje-Palo):-
+carta_personaje(Personaje-Palo) :-
     personaje(Personaje),
     palo(Palo).
 
-carta_valor(Valor-Palo):-
+carta_valor(Valor-Palo) :-
     valor(Valor),
     palo(Palo).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                   baraja/1    baraja(<Baraja>).
+%                                       mazo/1  mazo(<Mazo>).
+
+%   Generan una lista con 52 y 108 cartas, respectivamente. La baraja solo incluye las cartas con 
+%   valor o personaje, pues los comodines se añaden al crear el mazo con dos barajas.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+baraja(B) :-
+    findall(C, carta_personaje(C), Personajes),
+    findall(C, carta_valor(C), Valores),
+    append(Personajes, Valores, B),
+
+mazo(M) :-
+    baraja(B1),baraja(B2),
+    findall(C,comodín(C),Comodines),
+    append(B1,B2,Cartas),
+    append(Comodines,Cartas,B).
