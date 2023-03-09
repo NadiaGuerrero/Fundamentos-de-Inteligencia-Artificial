@@ -165,7 +165,22 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 %   FLOR IMPERIAL
+
+%   Sin comodines:
+%   Verifica que todos los valores de las cartas más altas de la baraja pertenezcan a la mano y
+%   sean del mismo palo.
+
+%   Con uno o dos comodines:
+%   Retira los comodines de la mano y verifica que las cartas restantes tengan alguno de los
+%   siguientes valores ['A','K','Q','J',10], sean distintas entre sí y pertenezcan al mismo palo.
+
+%   Con tres o cuatro comodines:
+%   Busca una o dos cartas que tengan alguno de los siguientes valores ['A','K','Q','J',10], 
+%   verifica que sean distintas (cuando son dos) y las retira de la mano. Posteriormente revisa 
+%   que el resto de la mano esté conformada únicamente por comodines.
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 figura(Mano,'Flor imperial') :-
     member('A'-P,Mano),
@@ -173,6 +188,47 @@ figura(Mano,'Flor imperial') :-
     member('Q'-P,Mano),
     member('J'-P,Mano),
     member(10-P,Mano).
+
+figura(Mano,'Flor imperial') :-
+    FlorImperial = ['A'-P,'K'-P,'Q'-P,'J'-P,10-P],
+    comodín(Comodín),
+    member(Comodín,Mano),select(Comodín,Mano,Resto),
+    Resto = [V1-P,V2-P,V3-P,V4-P],
+    V1 \== V2, V1 \== V3, V1 \== V4,
+    V2 \== V3, V2 \== V4, V3 \== V4,
+    member(V1-P,FlorImperial),
+    member(V2-P,FlorImperial),
+    member(V3-P,FlorImperial),
+    member(V4-P,FlorImperial).
+
+figura(Mano,'Flor imperial') :-
+    FlorImperial = ['A'-P,'K'-P,'Q'-P,'J'-P,10-P],
+    comodín(Comodín1),
+    member(Comodín1,Mano),select(Comodín1,Mano,Resto1),
+    comodín(Comodín2),
+    member(Comodín2,Resto1),select(Comodín2,Resto1,Resto2),
+    Resto2 = [V1-P,V2-P,V3-P],
+    V1 \== V2, V1 \== V3, V2 \== V3,
+    member(V1-P,FlorImperial),
+    member(V2-P,FlorImperial),
+    member(V3-P,FlorImperial).
+
+figura(Mano,'Flor imperial') :-
+    FlorImperial = ['A'-P,'K'-P,'Q'-P,'J'-P,10-P],
+    member(Carta1,FlorImperial),
+    member(Carta2,FlorImperial),
+    Carta1 \== Carta2,
+    select(Carta1,Mano,Resto1),
+    select(Carta2,Resto1,Resto),
+    Resto = [C1,C2,C3],
+    comodín(C1),comodín(C2),comodín(C3).
+
+figura(Mano,'Flor imperial') :-
+    FlorImperial = ['A'-P,'K'-P,'Q'-P,'J'-P,10-P],
+    member(Carta,FlorImperial),
+    select(Carta,Mano,Resto),
+    Resto = [C1,C2,C3,C4],
+    comodín(C1),comodín(C2),comodín(C3),comodín(C4).
 
 %   FLOR
 %   POKER
