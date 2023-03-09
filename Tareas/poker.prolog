@@ -280,6 +280,47 @@ figura(Mano,'Poker') :-
 
 %   FULL HOUSE
 
+figura(Mano,'Full house') :-
+    member(Par-_,Mano),select(Par-_,Mano,Resto1),
+    member(Par-_,Resto1),select(Par-_,Resto1,Resto),
+    \+ member(Par-_,Resto),
+    Resto = [Tercia-_,Tercia-_,Tercia-_].
+
+figura(Mano,'Full house') :-
+    member(Par-_,Mano),select(Par-_,Mano,Resto1),
+    member(Par-_,Resto1),select(Par-_,Resto1,Resto2),
+    \+ member(Par-_,Resto2),
+    comodín(Comodín),select(Comodín,Resto2,Resto),
+    Resto = [Tercia-_,Tercia-_].
+
+figura(Mano,'Full house') :-
+    member(Par-_,Mano),select(Par-_,Mano,Resto1),
+    comodín(Comodín),select(Comodín,Resto1,Resto),
+    \+ member(Par-_,Resto),
+    Resto = [Tercia-_,Tercia-_,Tercia-_].
+
+figura(Mano,'Full house') :-
+    comodín(Comodín1),select(Comodín1,Mano,Resto1),
+    comodín(Comodín2),select(Comodín2,Resto1,Resto),
+    Resto = [Tercia-_,Tercia-_,Tercia-_].
+
+figura(Mano,'Full house') :-
+    comodín(Comodín1),select(Comodín1,Mano,Resto1),
+    comodín(Comodín2),select(Comodín2,Resto1,Resto2),
+    member(V-_,Resto2),select(V-_,Resto2,Resto),
+    Resto = [Par-_,Par-_].
+
+figura(Mano,'Full house') :-
+    member(_-_,Mano),select(_-_,Mano,Resto1),
+    member(_-_,Resto1),select(_-_,Resto1,Resto),
+    Resto = [C1,C2,C3],
+    comodín(C1),comodín(C2),comodín(C3).
+
+figura(Mano,'Full house') :-
+    member(V-P,Mano),select(V-P,Mano,Resto),
+    Resto = [C1,C2,C3,C4],
+    comodín(C1),comodín(C2),comodín(C3),comodín(C4).
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 %   COLOR
 
