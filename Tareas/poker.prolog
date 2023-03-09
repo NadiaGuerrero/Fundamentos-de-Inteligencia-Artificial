@@ -144,3 +144,33 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
     append([Mano],ManosAnteriores,Manos),
     CantidadManosRestante is CantidadManos - 1,
     reparte_n_manos(RestoMazo,MazoRestante,CantidadManosRestante,TamañoMano,ManosAnteriores).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                 figura/2    figura(<Mano>,<Figura>).
+
+%   Este predicado identifica las figuras presentes en una mano, nótese que como no se utiliza
+%   el corte, se puede obtener más de una respuesta.
+%   A continuación se enlistan las figuras en orden descendente acompañadas de una descripción:
+
+%   - Flor imperial     Las cinco cartas más altas de un solo palo
+%   - Flor              Cinco cartas consecutivas de un mismo palo
+%   - Poker             Cuatro cartas con el mismo valor o personaje
+%   - Full house        Una tercia y un par
+%   - Color             Cinco cartas no consecutivas del mismo palo
+%   - Escalera          Cinco cartas consecutivas
+%   - Doble par         Dos pares distintos
+%   - Par               Dos cartas con el mismo valor
+%   - Nada              Ninguna de las figuras anteriores
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%   FLOR IMPERIAL
+%   FLOR
+%   POKER
+%   FULL HOUSE
+%   COLOR
+%   ESCALERA
+%   DOBLE PAR
+%   PAR
+%   NADA
