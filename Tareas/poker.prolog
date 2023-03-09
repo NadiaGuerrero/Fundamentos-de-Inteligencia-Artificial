@@ -1,5 +1,5 @@
-﻿%                       Fundamentos de Inteligencia artificial      
-%                           Nadia Itzel Guerrero Sánchez      
+﻿%                                 Fundamentos de Inteligencia artificial      
+%                                     Nadia Itzel Guerrero Sánchez      
 %
 %   Tarea #2 Figuras de poker              
 %
@@ -16,7 +16,7 @@
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %   Los siguientes predicados tienen aridad 1 y se utilizan para identificar elementos 
-%   pertenecientes a un conjunto específico, A continuación se enlista cada predicado acompañado
+%   pertenecientes a un conjunto específico, A continuación se muestra cada predicado acompañado
 %   de la lista de elementos con los que es válido y una breve descripción.
 
 %                                                                       Representan a los palos de 
@@ -76,10 +76,53 @@ carta_valor(Valor-Palo) :-
 baraja(B) :-
     findall(C, carta_personaje(C), Personajes),
     findall(C, carta_valor(C), Valores),
-    append(Personajes, Valores, B),
+    append(Personajes, Valores, B).
 
 mazo(M) :-
     baraja(B1),baraja(B2),
     findall(C,comodín(C),Comodines),
     append(B1,B2,Cartas),
-    append(Comodines,Cartas,B).
+    append(Comodines,Cartas,M).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                     barajar/2    barajar(<BarajaOriginal>,<BarajaDesordenada>).
+
+%   Recibe una lista de cartas y la devuelve en un orden distinto, puede utilizarse para barajas o
+%   mazos completos.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+barajar(BarajaOriginal,BarajaDesordenada):- random_permutation(BarajaOriginal,BarajaDesordenada).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                  carta_al_azar/3    carta_al_azar(<Mazo>,<MazoRestante>,<Carta>).
+%                       mano/4  mano(<Mazo>,<MazoRestante>,<TamañoMano>,<Mano>).
+
+%   Estos predicados sirven para seleccionar cartas al azar y retirarlas del mazo. Con el predicado
+%   carta_al_azar/3 únicamente se retira una carta, mientras que con mano/4 se pueden retirar las 
+%   cartas que se deseen, incluso cuando la cqntidad de cartas (tamaño de mano) sea igual al tamaño
+%   del mazo.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+carta_al_azar(Mazo,MazoRestante,Carta) :-
+    length(Mazo,N),
+    N >= 2,
+    random_between(1, N, Pos),
+    nth1(Pos,Mazo,Carta),
+    select(Carta,Mazo,MazoRestante).
+
+carta_al_azar(Mazo,MazoRestante,Carta) :-
+    Mazo = [Carta],
+    select(Carta,Mazo,MazoRestante).
+
+mano(Mazo,Mazo,0,[]).
+
+mano(Mazo,MazoRestante,TamañoMano,Mano) :-
+    TamañoMano > 0,
+    carta_al_azar(Mazo,RestoMazo,Carta),
+    append([Carta],RestoMano,Mano),
+    TamañoRestoMano is TamañoMano - 1,
+    mano(RestoMazo,MazoRestante,TamañoRestoMano,RestoMano).
