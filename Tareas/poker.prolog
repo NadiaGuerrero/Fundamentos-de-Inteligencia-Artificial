@@ -163,6 +163,10 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
 %   - Par               Dos cartas con el mismo valor
 %   - Nada              Ninguna de las figuras anteriores
 
+%   NOTA: Cada figura incluye una explicación del algoritmo que se utiliza para identificarla.
+%   Además, los predicados de una misma figura están ordenados de acuerdo a la cantidad de 
+%   comodines que identifican, de 0 a 4.
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
@@ -231,6 +235,10 @@ figura(Mano,'Flor imperial') :-
 
 %   FLOR
 %   POKER
+
+figura(Mano,'Poker') :-
+    
+
 %   FULL HOUSE
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
