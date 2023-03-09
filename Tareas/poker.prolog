@@ -126,3 +126,21 @@ mano(Mazo,MazoRestante,TamañoMano,Mano) :-
     append([Carta],RestoMano,Mano),
     TamañoRestoMano is TamañoMano - 1,
     mano(RestoMazo,MazoRestante,TamañoRestoMano,RestoMano).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%   reparte_n_manos/5   reparte_n_manos(<Mazo>,<MazoRestante>,<CantidadManos>,<TamañoMano>,<Manos>).
+
+%   Con este predicado se seleccionan y retiran del mazo las manos que se deseen, todas son del
+%   mismo tamaño y se almacenan en una lista de listas. 
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+reparte_n_manos(Mazo,Mazo,0,_,[]).
+
+reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
+    CantidadManos > 0,
+    mano(Mazo,RestoMazo,TamañoMano,Mano),
+    append([Mano],ManosAnteriores,Manos),
+    CantidadManosRestante is CantidadManos - 1,
+    reparte_n_manos(RestoMazo,MazoRestante,CantidadManosRestante,TamañoMano,ManosAnteriores).
