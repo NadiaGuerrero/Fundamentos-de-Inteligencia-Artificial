@@ -234,10 +234,49 @@ figura(Mano,'Flor imperial') :-
     comodín(C1),comodín(C2),comodín(C3),comodín(C4).
 
 %   FLOR
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 %   POKER
 
+%   En todos los casos el primer paso es retirar una carta de valor o personaje de la mano, una 
+%   vez hecho, se realizan los pasos que se describen en cada variante.
+
+%   Sin comodines:
+%   Verifica que la mano esté conformada por cuatro cartas del mismo valor.
+
+%   Con uno o dos comodines:
+%   Retira los comodines y verifica que todas las cartas restantes tengan el miso valor.
+
+%   Con tres o cuatro comodines:
+%   En el caso de tres retira una carta de valor o personaje, para cuatro comodines omite ese  
+%   paso y únicamente verifica que el restante de la mano sean sólo comodines.
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
 figura(Mano,'Poker') :-
-    
+    member(V-P,Mano),select(V-P,Mano,Resto),
+    Resto = [Poker-_,Poker-_,Poker-_,Poker-_].
+
+figura(Mano,'Poker') :-
+    member(V-P,Mano),select(V-P,Mano,Resto1),
+    comodín(Comodín),select(Comodín,Resto1,Resto),
+    Resto = [Poker-_,Poker-_,Poker-_].
+
+figura(Mano,'Poker') :-
+    member(V-P,Mano),select(V-P,Mano,Resto1),
+    comodín(Comodín1),select(Comodín1,Resto1,Resto2),
+    comodín(Comodín2),select(Comodín2,Resto2,Resto),
+    Resto = [Poker-_,Poker-_].
+
+figura(Mano,'Poker') :-
+    member(V-P,Mano),select(V-P,Mano,Resto1),
+    member(VP-_,Resto1),select(VP-_,Resto1,Resto),
+    Resto = [C1,C2,C3],
+    comodín(C1),comodín(C2),comodín(C3).
+
+figura(Mano,'Poker') :-
+    member(V-P,Mano),select(V-P,Mano,Resto),
+    Resto = [C1,C2,C3,C4],
+    comodín(C1),comodín(C2),comodín(C3),comodín(C4).
 
 %   FULL HOUSE
 
