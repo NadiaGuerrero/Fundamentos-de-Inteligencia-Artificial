@@ -172,5 +172,32 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
 %   COLOR
 %   ESCALERA
 %   DOBLE PAR
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 %   PAR
+
+%   Sin comodines:
+%   Encuentra una carta con valor V y la retira de la mano, busca una segunda carta con el mismo
+%   valor y también la retira, comprueba que ya no haya más cartas con el mismo valor y finalmente
+%   revisa que las tres cartas restantes tengan valores distintos entre sí.
+
+%   Con un comodín:
+%   Encuentra un comodín en la mano y lo retira, luego comprueba que queden 4 cartas con valores 
+%   distintos entre sí.
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+figura(Mano,'Par') :-
+    member(V-_,Mano),select(V-_,Mano,Resto1),
+    member(V-_,Resto1),select(V-_,Resto1,Resto2),
+    \+ member(V-_,Resto2),
+    Resto2 = [V1-_,V2-_,V3-_],
+    V3 \== V2, V3 \== V1, V1 \== V2.
+
+figura(Mano,'Par') :-
+    comodín(Comodín),
+    member(Comodín,Mano),select(Comodín,Mano,Resto),
+    Resto = [V1-_,V2-_,V3-_,V4-_],
+    V1 \== V2, V1 \== V3, V1 \== V4,
+    V2 \== V3, V2 \== V4, V3 \== V4.
+
 %   NADA
