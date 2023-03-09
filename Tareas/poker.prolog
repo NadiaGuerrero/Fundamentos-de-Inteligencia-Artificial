@@ -166,6 +166,14 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %   FLOR IMPERIAL
+
+figura(Mano,'Flor imperial') :-
+    member('A'-P,Mano),
+    member('K'-P,Mano),
+    member('Q'-P,Mano),
+    member('J'-P,Mano),
+    member(10-P,Mano).
+
 %   FLOR
 %   POKER
 %   FULL HOUSE
