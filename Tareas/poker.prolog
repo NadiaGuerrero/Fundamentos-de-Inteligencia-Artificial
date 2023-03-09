@@ -157,7 +157,7 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
 %   - Flor              Cinco cartas consecutivas de un mismo palo
 %   - Poker             Cuatro cartas con el mismo valor o personaje
 %   - Full house        Una tercia y un par
-%   - Color             Cinco cartas no consecutivas del mismo palo
+%   - Color             Cinco cartas no necesariamente consecutivas de un mismo palo
 %   - Escalera          Cinco cartas consecutivas
 %   - Doble par         Dos pares distintos
 %   - Par               Dos cartas con el mismo valor
@@ -203,9 +203,8 @@ figura(Mano,'Flor imperial') :-
 
 figura(Mano,'Flor imperial') :-
     FlorImperial = ['A'-P,'K'-P,'Q'-P,'J'-P,10-P],
-    comodín(Comodín1),
+    comodín(Comodín1),comodín(Comodín2),
     member(Comodín1,Mano),select(Comodín1,Mano,Resto1),
-    comodín(Comodín2),
     member(Comodín2,Resto1),select(Comodín2,Resto1,Resto2),
     Resto2 = [V1-P,V2-P,V3-P],
     V1 \== V2, V1 \== V3, V2 \== V3,
@@ -233,7 +232,46 @@ figura(Mano,'Flor imperial') :-
 %   FLOR
 %   POKER
 %   FULL HOUSE
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 %   COLOR
+
+%   Sin comodines:
+%   Verifica que la mano sea una lista de cartas de un mismo palo.
+
+%   Con uno o dos comodines:
+%   Retira los comodines de la mano y verifica que las demás cartas pertenezcan a un mismo palo.
+
+%   Con tres o cuatro comodines:
+%   Retira dos cartas o una, respectivamente, verifica que sean del mismo palo (cuando son dos) 
+%   y que el resto de la mano sean sólo comodines.
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+figura(Mano,'Color') :-
+    Mano = [_-P,_-P,_-P,_-P,_-P].
+
+figura(Mano,'Color') :-
+    comodín(Comodín),
+    member(Comodín,Mano),select(Comodín,Mano,Resto),
+    Resto = [_-P,_-P,_-P,_-P].
+
+figura(Mano,'Color') :-
+    comodín(Comodín1),comodín(Comodín2),
+    member(Comodín1,Mano),select(Comodín1,Mano,Resto1),
+    member(Comodín2,Resto1),select(Comodín2,Resto1,Resto2),
+    Resto2 = [_-P,_-P,_-P].
+
+figura(Mano,'Color') :-
+    member(_-P,Mano),select(_-P,Mano,Resto1),
+    member(_-P,Resto1),select(_-P,Resto1,Resto2),
+    Resto2 = [C1,C2,C3],
+    comodín(C1),comodín(C2),comodín(C3).
+
+figura(Mano,'Color') :-
+    select(_,Mano,Resto),
+    Resto = [C1,C2,C3,C4],
+    comodín(C1),comodín(C2),comodín(C3),comodín(C4).
+
 %   ESCALERA
 %   DOBLE PAR
 
