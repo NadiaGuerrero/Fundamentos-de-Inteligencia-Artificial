@@ -202,6 +202,9 @@ florImperial(Mano) :-
     forall(member(V-_,Mano),member(V,FlorImperial)).
 
 %   FLOR
+
+
+
 %   POKER
 %   FULL HOUSE
 %   COLOR
@@ -209,3 +212,24 @@ florImperial(Mano) :-
 %   DOBLE PAR
 %   PAR
 %   NADA
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   valor/2   valor(<Carta>,<Valor>).
+
+%   Se utiliza para asignar un valor numérico a cada carta, para las cartas numéricas únicamente 
+%   se recupera su valor, mientras que a las cartas de personaje se les asigna el número que le
+%   corresponde al ordenarlas de manera ascendente. A los comodines se les asigna el 0.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+valor('A'-_,14).
+valor('K'-_,13).
+valor('Q'-_,12).
+valor('J'-_,11).
+
+valor(Valor-_,Valor) :-
+    number(Valor).
+
+valor(Comodín,0) :-
+    comodín(Comodín).
