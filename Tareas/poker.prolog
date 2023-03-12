@@ -178,6 +178,7 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 %   - Full house        Una tercia y un par
 %   - Color             Cinco cartas no consecutivas de un mismo palo
 %   - Escalera          Cinco cartas consecutivas
+%   - Tercia            Tres cartas con el mismo valor
 %   - Doble par         Dos pares distintos
 %   - Par               Dos cartas con el mismo valor
 %   - Nada              Ninguna de las figuras anteriores
@@ -260,13 +261,14 @@ escalera(Mano) :-
 %   asegura por lo menos una flor y en caso de que se tenga una de las cartas 
 %   más altas, una flor imperial.
 
+%   TERCIA
 %   DOBLE PAR
 %   PAR
 %   NADA
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                   valor/2   valor(<Carta>,<Valor>).
+%                                   valor/2   valor(<Carta>,<Valor>).
 
 %   Se utiliza para asignar un valor numérico a cada carta, para las cartas numéricas únicamente 
 %   se recupera su valor, mientras que a las cartas de personaje se les asigna el número que le
