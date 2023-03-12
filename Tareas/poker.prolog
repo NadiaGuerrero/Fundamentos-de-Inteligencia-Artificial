@@ -261,9 +261,27 @@ escalera(Mano) :-
 %   asegura por lo menos una flor y en caso de que se tenga una de las cartas 
 %   más altas, una flor imperial.
 
-%   TERCIA
+%   TERCIA - 0 a 2 comodines
+
+tercia(Mano) :-
+    select(_,Mano,Resto1),               
+    select(_,Resto1,RestoMano),             %   Retira dos cartas y verifica que
+    sort(1,@<,RestoMano,Valores),           %   el resto tengan el mismo valor.
+    length(Valores,1). 
+
+%   NOTA: se limitan los comodines a 2 porque al tener 3 ya se garantiza un poker,
+%   por lo menos.
+
 %   DOBLE PAR
-%   PAR
+%   PAR - 0 o 1 comodín
+
+tercia(Mano) :-
+    select(_,Mano,Resto1),
+    select(_,Resto1,Resto2),                %   Retira tres cartas y verifica que
+    select(_,Resto2,RestoMano),             %   el resto tengan el mismo valor.
+    sort(1,@<,RestoMano,Valores),           
+    length(Valores,1). 
+
 %   NADA
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
