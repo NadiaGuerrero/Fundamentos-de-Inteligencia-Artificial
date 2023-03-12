@@ -279,11 +279,15 @@ tercia(Mano) :-
 %   PAR - 0 o 1 comodín
 
 par(Mano) :-
-    select(_,Mano,Resto1),
-    select(_,Resto1,Resto2),                %   Retira tres cartas y verifica que
-    select(_,Resto2,RestoMano),             %   el resto tengan el mismo valor.
-    sort(1,@<,RestoMano,Valores),           
-    length(Valores,1). 
+    select(V1-_,Mano,Resto1),               %   Retira tres cartas, verifica que
+    \+ member(V1-_,Resto1),                 %   tengan valores distintos entre sí
+    select(V2-_,Resto1,Resto2),             %   y que ya no estén presentes en la mano.
+    \+ member(V2-_,Resto2),
+    select(V3-_,Resto2,RestoMano),             
+    \+ member(V3-_,RestoMano),
+    
+    sort(1,@<,RestoMano,Valores),           %   Verifica que las cartas que quedan 
+    length(Valores,1).                      %   en la mano sean iguales.
 
 %   NOTA: se considera sólo un comodín porque al tener más ya es posible formar
 %   figuras de mayor valor.
