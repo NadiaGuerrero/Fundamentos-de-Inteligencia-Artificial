@@ -145,3 +145,31 @@ reparte_n_manos(Mazo,MazoRestante,CantidadManos,TamañoMano,Manos) :-
     CantidadManosRestante is CantidadManos - 1,
     reparte_n_manos(RestoMazo,MazoRestante,CantidadManosRestante,TamañoMano,ManosAnteriores).
 
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   mano_separada/3   mano_separada(<Mano>,<Comodines>,<Cartas>).
+
+%   Genera dos listas a partir de la mano original, la primera contiene los coodines y la segunda 
+%   el resto de las cartas.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+mano_separada([],[],[]).
+
+mano_separada([X|Mano],[X|Comodines],Cartas) :- 
+    comodín(X),
+    mano_separada(Mano,Comodines,Cartas).
+
+mano_separada([X|Mano],Comodines,[X|Cartas]) :- 
+    \+ comodín(X),
+    mano_separada(Mano,Comodines,Cartas).
+
+%   FLOR IMPERIAL
+%   FLOR
+%   POKER
+%   FULL HOUSE
+%   COLOR
+%   ESCALERA
+%   DOBLE PAR
+%   PAR
+%   NADA
