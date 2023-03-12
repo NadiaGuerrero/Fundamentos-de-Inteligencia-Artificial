@@ -252,7 +252,7 @@ escalera(Mano) :-
     length(ValoresCartas,TamañoMano),       %   duplicados.
 
     last(ValoresCartas,Mayor),              
-    Mayor \== 14,                           %   Revisa que todos los elementos 
+    Mayor \== 14,                           %   Revisa que todos los valores 
     ValoresCartas = [Menor|_],              %   estén en un rango de máximo 5 y
     Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
     Diferencia < 5.
@@ -262,12 +262,15 @@ escalera(Mano) :-
 %   más altas, una flor imperial.
 
 %   TERCIA - 0 a 2 comodines
-
+%Revisar que no haya pokers en vez de tercias, ása cuando son 5 elementos y hay un poker, lo mismo con los pares
 tercia(Mano) :-
-    select(_,Mano,Resto1),               
-    select(_,Resto1,RestoMano),             %   Retira dos cartas y verifica que
-    sort(1,@<,RestoMano,Valores),           %   el resto tengan el mismo valor.
-    length(Valores,1). 
+    select(V1-_,Mano,Resto1),               %   Retira dos cartas, verifica que
+    \+ member(V1-_,Resto1),                 %   tengan valores distintos entre 
+    select(V2-_,Resto1,RestoMano),          %   sí y de las que siguen en la mano.
+    \+ member(V2-_,RestoMano),
+
+    sort(1,@<,RestoMano,Valores),           %   Revisa que el resto de las cartas
+    length(Valores,1).                      %   tengan el mismo valor.
 
 %   NOTA: se limitan los comodines a 2 porque al tener 3 ya se garantiza un poker,
 %   por lo menos.
@@ -275,12 +278,15 @@ tercia(Mano) :-
 %   DOBLE PAR
 %   PAR - 0 o 1 comodín
 
-tercia(Mano) :-
+par(Mano) :-
     select(_,Mano,Resto1),
     select(_,Resto1,Resto2),                %   Retira tres cartas y verifica que
     select(_,Resto2,RestoMano),             %   el resto tengan el mismo valor.
     sort(1,@<,RestoMano,Valores),           
     length(Valores,1). 
+
+%   NOTA: se considera sólo un comodín porque al tener más ya es posible formar
+%   figuras de mayor valor.
 
 %   NADA
 
