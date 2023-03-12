@@ -226,7 +226,10 @@ poker(Mano) :-
     sort(1,@<,RestoMano,Valores),           %   se cerciora de que las cartas 
     length(Valores,1).                      %   restantes tengan el mismo valor.
 
-%   FULL HOUSE
+%   FULL HOUSE - 0 o 1 comodín
+
+
+
 %   COLOR - 0 a 3 comodines
 
 color(Mano) :-
@@ -262,7 +265,7 @@ escalera(Mano) :-
 %   más altas, una flor imperial.
 
 %   TERCIA - 0 a 2 comodines
-%Revisar que no haya pokers en vez de tercias, ása cuando son 5 elementos y hay un poker, lo mismo con los pares
+
 tercia(Mano) :-
     select(V1-_,Mano,Resto1),               %   Retira dos cartas, verifica que
     \+ member(V1-_,Resto1),                 %   tengan valores distintos entre 
@@ -275,14 +278,26 @@ tercia(Mano) :-
 %   NOTA: se limitan los comodines a 2 porque al tener 3 ya se garantiza un poker,
 %   por lo menos.
 
-%   DOBLE PAR
-%Funciona para 2 y 2, pero hay que hacer que no jale para 3 y 2
-doblePar(Mano) :-
-    select(V-_,Mano.RestoMano),
-    \+ member(V-_,RestoMano),
+%   DOBLE PAR 0 a 2 comodines
 
-    sort(1,@<,RestoMano,Valores),             %   Revisa que todas las cartas
-    length(Valores,2).                        %   sean del mismo palo.
+doblePar(Mano) :-
+    Mano = [V1-_,V2-_,V3-_],                %   2 comodines
+    V3 \== V2, V3 \== V1, V1 \== V2.
+
+doblePar(Mano) :-
+    select(V1-_,Mano,Resto1),               %   1 comodín
+    \+ member(V1-_,Resto1),                 
+    select(V2-_,Resto1,Resto2),             %   Verifica que haya dos cartas iguales 
+    \+ member(V2-_,Resto2),                 %   y dos diferentes.
+    Resto2 = [V-_,V-_].
+
+doblePar(Mano) :-
+    select(V1-_,Mano,Resto1),               %   0 comodines
+    \+ member(V1-_,Resto1),
+    select(V2-_,Resto1,Resto2),             %   Se tienen los dos pares y una 
+    select(V2-_,Resto2,Resto3),             %   carta diferente.
+    \+ member(V2-_,Resto3),
+    Resto3 = [V-_,V-_].
 
 %   PAR - 0 o 1 comodín
 
