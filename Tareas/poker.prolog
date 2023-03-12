@@ -366,6 +366,24 @@ valor(Comodín,0) :-
     comodín(Comodín).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+figurasManos([],[]).
+figurasManos([ManoOriginal|RestoManos],[Figura|RestoFiguras]) :-
+    mano_separada(ManoOriginal,_,Mano),
+    (
+        (florImperial(Mano), Figura = 1-Mano);
+        (flor(Mano), Figura = 2-Mano);
+        (poker(Mano), Figura = 3-Mano);
+        (fullHouse(Mano), Figura = 4-Mano);
+        (color(Mano), Figura = 5-Mano);
+        (escalera(Mano), Figura = 6-Mano);
+        (tercia(Mano), Figura = 7-Mano);
+        (doblePar(Mano), Figura = 8-Mano);
+        (par(Mano), Figura = 9-Mano);
+        (nada(Mano), Figura = 10-Mano)
+    ),
+    figurasManos(RestoManos,RestoFiguras).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                       repartir/
 
