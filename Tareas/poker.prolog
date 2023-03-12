@@ -239,7 +239,27 @@ color(Mano) :-
 %   tener los 4, una combinación de ese tipo sería también una flor, que es
 %   una figura con más peso.
 
-%   ESCALERA
+%   ESCALERA - 0 a 3 comodines
+
+escalera(Mano) :-
+    length(Mano,TamañoMano),                %   Verifica que tenga menos de 4
+    TamañoMano > 1,                         %   comodines.
+
+    maplist(valor(),Mano,Valores),          %   Calcula los valores de 
+    sort(Valores,ValoresCartas),            %   las cartas, los ordena 
+    length(Mano,TamañoMano),                %   y verifica que no haya 
+    length(ValoresCartas,TamañoMano),       %   duplicados.
+
+    last(ValoresCartas,Mayor),              
+    Mayor \== 14,                           %   Revisa que todos los elementos 
+    ValoresCartas = [Menor|_],              %   estén en un rango de máximo 5 y
+    Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
+    Diferencia < 5.
+
+%   NOTA: se limita la cantidad de comodines porque al tener 4 en la mano se 
+%   asegura por lo menos una flor y en caso de que se tenga una de las cartas 
+%   más altas, una flor imperial.
+
 %   DOBLE PAR
 %   PAR
 %   NADA
