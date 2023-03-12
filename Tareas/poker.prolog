@@ -276,6 +276,14 @@ tercia(Mano) :-
 %   por lo menos.
 
 %   DOBLE PAR
+%Funciona para 2 y 2, pero hay que hacer que no jale para 3 y 2
+doblePar(Mano) :-
+    select(V-_,Mano.RestoMano),
+    \+ member(V-_,RestoMano),
+
+    sort(1,@<,RestoMano,Valores),             %   Revisa que todas las cartas
+    length(Valores,2).                        %   sean del mismo palo.
+
 %   PAR - 0 o 1 comodín
 
 par(Mano) :-
