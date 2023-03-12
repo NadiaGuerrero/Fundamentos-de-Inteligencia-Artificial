@@ -218,8 +218,13 @@ flor(Mano) :-
     Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
     Diferencia < 5.
 
+%   POKER - 0 a 3 comodines
 
-%   POKER
+poker(Mano) :-
+    select(_,Mano,RestoMano),               %   Retira una carta (el kicker) y
+    sort(1,@<,RestoMano,Valores),           %   se cerciora de que las cartas 
+    length(Valores,1).                      %   restantes tengan el mismo valor.
+
 %   FULL HOUSE
 %   COLOR
 %   ESCALERA
