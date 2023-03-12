@@ -98,7 +98,7 @@ barajar(BarajaOriginal,BarajaDesordenada):- random_permutation(BarajaOriginal,Ba
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                  carta_al_azar/3    carta_al_azar(<Mazo>,<MazoRestante>,<Carta>).
-%                       mano/4  mano(<Mazo>,<MazoRestante>,<TamañoMano>,<Mano>).
+%                      mano/4  mano(<Mazo>,<MazoRestante>,<TamañoMano>,<Mano>).
 
 %   Estos predicados sirven para seleccionar cartas al azar y retirarlas del mazo. Con el predicado
 %   carta_al_azar/3 únicamente se retira una carta, mientras que con mano/4 se pueden retirar las 
@@ -163,8 +163,72 @@ mano_separada([X|Mano],[X|Comodines],Cartas) :-
 mano_separada([X|Mano],Comodines,[X|Cartas]) :- 
     \+ comodín(X),
     mano_separada(Mano,Comodines,Cartas).
+    
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                               FIGURAS
+
+%   Los siguientes predicados identifican las figuras presentes en las manos de cada jugador, 
+%   las manos se procesan después de haber retirado los comodines con mano_separada/3.
+%   A continuación se enlistan las figuras en orden descendente acompañadas de una descripción:
+
+%   - Flor imperial     Las cinco cartas más altas de un solo palo
+%   - Flor              Cinco cartas consecutivas de un mismo palo
+%   - Poker             Cuatro cartas con el mismo valor o personaje
+%   - Full house        Una tercia y un par
+%   - Color             Cinco cartas no consecutivas de un mismo palo
+%   - Escalera          Cinco cartas consecutivas
+%   - Doble par         Dos pares distintos
+%   - Par               Dos cartas con el mismo valor
+%   - Nada              Ninguna de las figuras anteriores
+
+%   NOTA: Cada figura incluye una explicación del algoritmo que se utiliza para identificarla.
+%   Además, los predicados de una misma figura están ordenados de acuerdo a la cantidad de 
+%   comodines que contenía la mano original, de 0 a 4.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %   FLOR IMPERIAL
+
+florImperial(Mano) :-
+    member('A'-P,Mano),
+    member('K'-P,Mano),
+    member('Q'-P,Mano),
+    member('J'-P,Mano),
+    member(10-P,Mano).
+
+florImperial(Mano) :-
+    FlorImperial = ['A','K','Q','J',10],
+    Mano = [V1-P,V2-P,V3-P,V4-P],
+    member(V1,FlorImperial),
+    member(V2,FlorImperial),
+    member(V3,FlorImperial),
+    member(V4,FlorImperial),
+    V1 \== V2, V1 \== V3, V1 \== V4,
+    V2 \== V3, V2 \== V4, V3 \== V4.
+
+florImperial(Mano) :-
+    FlorImperial = ['A','K','Q','J',10],
+    Mano = [V1-P,V2-P,V3-P],
+    member(V1,FlorImperial),
+    member(V2,FlorImperial),
+    member(V3,FlorImperial),
+    V1 \== V2, V1 \== V3, V2 \== V3.
+
+florImperial(Mano) :-
+    FlorImperial = ['A','K','Q','J',10],
+    Mano = [V1-P,V2-P],
+    member(V1,FlorImperial),
+    member(V2,FlorImperial),
+    V1 \== V2.
+
+florImperial(Mano) :-
+    FlorImperial = ['A','K','Q','J',10],
+    Mano = [V-_],
+    member(V,FlorImperial).
+
+
+
 %   FLOR
 %   POKER
 %   FULL HOUSE
