@@ -229,19 +229,19 @@ poker(Mano) :-
 %   FULL HOUSE - 0 o 1 comodín
 
 fullHouse(Mano) :-
-    select(V1-_,Mano,Resto),
+    select(V1-_,Mano,Resto),                %   0 comodines
     select(V1-_,Resto,Resto1),
     Resto1 = [V2-_,V2-_,V2-_],
     V1 \== V2.
 
 fullHouse(Mano) :-
-    sort(1,@=<,Mano,ManoOrdenada),
-    ManoOrdenada = [V1-_,V1-_,V2-_,V2-_],
+    sort(1,@=<,Mano,ManoOrdenada),          %   1 comodín
+    ManoOrdenada = [V1-_,V1-_,V2-_,V2-_],   %   Recibe 2 pares de cartas.
     V1 \== V2.
 
 fullHouse(Mano) :-
-    select(V1-_,Mano,Resto),
-    Resto = [V2-_,V2-_,V2-_],
+    select(V1-_,Mano,Resto),                %   1 comodín
+    Resto = [V2-_,V2-_,V2-_],               %   Recibe una tercia y una carta distinta.
     V1 \== V2.
 
 %   COLOR - 0 a 3 comodines
@@ -331,6 +331,19 @@ par(Mano) :-
 
 %   NADA
 
+nada(Mano) :-
+    \+ (
+        florImperial(Mano);
+        flor(Mano);
+        poker(Mano);
+        fullHouse(Mano);
+        color(Mano);
+        escalera(Mano);
+        tercia(Mano);
+        doblePar(Mano);
+        par(Mano)
+    ).
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                                   valor/2   valor(<Carta>,<Valor>).
@@ -351,3 +364,15 @@ valor(Valor-_,Valor) :-
 
 valor(Comodín,0) :-
     comodín(Comodín).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       repartir/
+
+%
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+repartir() :-
+    mazo(Mazo),
+    reparte_n_manos(Mazo,_,4,5,Manos).
