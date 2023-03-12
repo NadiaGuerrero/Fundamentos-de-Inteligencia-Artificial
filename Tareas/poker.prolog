@@ -226,7 +226,19 @@ poker(Mano) :-
     length(Valores,1).                      %   restantes tengan el mismo valor.
 
 %   FULL HOUSE
-%   COLOR
+%   COLOR - 0 a 3 comodines
+
+color(Mano) :-
+    length(Mano,TamañoMano),                %   Verifica que tenga menos de 4
+    TamañoMano > 1,                         %   comodines.
+
+    sort(2,@<,Mano,Palos),                  %   Revisa que todas las cartas
+    length(Palos,1).                        %   sean del mismo palo.
+
+%   NOTA: se restringe la cantidad de comodines a 3 porque aunque es posible
+%   tener los 4, una combinación de ese tipo sería también una flor, que es
+%   una figura con más peso.
+
 %   ESCALERA
 %   DOBLE PAR
 %   PAR
