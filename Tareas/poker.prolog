@@ -188,7 +188,7 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%   FLOR IMPERIAL
+%   FLOR IMPERIAL - 0 a 4 comodines
 
 florImperial(Mano) :-
     sort(2,@<,Mano,Palos),                  %   Revisa que todas las cartas
@@ -201,8 +201,22 @@ florImperial(Mano) :-
     FlorImperial = ['A','K','Q','J',10],
     forall(member(V-_,Mano),member(V,FlorImperial)).
 
-%   FLOR
+%   FLOR - 0 a 4 comodines
 
+flor(Mano) :-
+    sort(2,@<,Mano,Palos),                  %   Revisa que todas las cartas
+    length(Palos,1),                        %   sean del mismo palo.
+
+    maplist(valor(),Mano,Valores),          %   Calcula los valores de 
+    sort(Valores,ValoresCartas),            %   las cartas, los ordena 
+    length(Mano,TamañoMano),                %   y verifica que no haya 
+    length(ValoresCartas,TamañoMano),       %   duplicados.
+
+    last(ValoresCartas,Mayor),              
+    Mayor \== 14,                           %   Revisa que todos los elementos 
+    ValoresCartas = [Menor|_],              %   estén en un rango de máximo 5 y
+    Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
+    Diferencia < 5.
 
 
 %   POKER
