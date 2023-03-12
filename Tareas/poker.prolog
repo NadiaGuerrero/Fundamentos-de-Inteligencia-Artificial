@@ -228,7 +228,21 @@ poker(Mano) :-
 
 %   FULL HOUSE - 0 o 1 comodín
 
+fullHouse(Mano) :-
+    select(V1-_,Mano,Resto),
+    select(V1-_,Resto,Resto1),
+    Resto1 = [V2-_,V2-_,V2-_],
+    V1 \== V2.
 
+fullHouse(Mano) :-
+    sort(1,@=<,Mano,ManoOrdenada),
+    ManoOrdenada = [V1-_,V1-_,V2-_,V2-_],
+    V1 \== V2.
+
+fullHouse(Mano) :-
+    select(V1-_,Mano,Resto),
+    Resto = [V2-_,V2-_,V2-_],
+    V1 \== V2.
 
 %   COLOR - 0 a 3 comodines
 
