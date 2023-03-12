@@ -191,43 +191,15 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 %   FLOR IMPERIAL
 
 florImperial(Mano) :-
-    member('A'-P,Mano),
-    member('K'-P,Mano),
-    member('Q'-P,Mano),
-    member('J'-P,Mano),
-    member(10-P,Mano).
+    sort(2,@<,Mano,Palos),                  %   Revisa que todas las cartas
+    length(Palos,1),                        %   sean del mismo palo.
 
-florImperial(Mano) :-
+    sort(1,@<,Mano,ValoresCartas),          %   Verifica que no haya 
+    length(Mano,TamañoMano),                %   cartas con valores 
+    length(ValoresCartas,TamañoMano),       %   duplicados.
+
     FlorImperial = ['A','K','Q','J',10],
-    Mano = [V1-P,V2-P,V3-P,V4-P],
-    member(V1,FlorImperial),
-    member(V2,FlorImperial),
-    member(V3,FlorImperial),
-    member(V4,FlorImperial),
-    V1 \== V2, V1 \== V3, V1 \== V4,
-    V2 \== V3, V2 \== V4, V3 \== V4.
-
-florImperial(Mano) :-
-    FlorImperial = ['A','K','Q','J',10],
-    Mano = [V1-P,V2-P,V3-P],
-    member(V1,FlorImperial),
-    member(V2,FlorImperial),
-    member(V3,FlorImperial),
-    V1 \== V2, V1 \== V3, V2 \== V3.
-
-florImperial(Mano) :-
-    FlorImperial = ['A','K','Q','J',10],
-    Mano = [V1-P,V2-P],
-    member(V1,FlorImperial),
-    member(V2,FlorImperial),
-    V1 \== V2.
-
-florImperial(Mano) :-
-    FlorImperial = ['A','K','Q','J',10],
-    Mano = [V-_],
-    member(V,FlorImperial).
-
-
+    forall(member(V-_,Mano),member(V,FlorImperial)).
 
 %   FLOR
 %   POKER
