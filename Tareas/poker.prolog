@@ -321,6 +321,17 @@ doblePar(Mano) :-
     \+ member(V2-_,Resto3),
     Resto3 = [V-_,V-_].
 
+doblePar(Mano,Valor) :-
+    doblePar(Mano),
+    length(Mano,T),
+    (
+        (T = 5,select(V-_,Mano,Resto),\+ member(V-_,Resto));
+        (Mano = Resto)
+    ),
+    maplist(valor(),Resto,Valores),
+    max_list(Valores,Max),
+    Valor is 1600 - (T*20) - Max.    
+
 %   PAR - 0 o 1 comodín
 
 par(Mano) :-
@@ -360,6 +371,11 @@ nada(Mano) :-
         doblePar(Mano);
         par(Mano)
     ).
+
+nada(Mano,Valor) :-
+    maplist(valor(),Mano,Valores),
+    max_list(Valores,Max),
+    Valor is 2000 - Max.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
