@@ -203,6 +203,13 @@ florImperial(Mano) :-
     FlorImperial = ['A','K','Q','J',10],
     forall(member(V-_,Mano),member(V,FlorImperial)).
 
+florImperial(Mano,Valor) :-
+    florImperial(Mano),
+    length(Mano,T),
+    maplist(valor(),Mano,Valores),
+    max_list(Valores,Max),
+    Valor is 200 - (T*20) - Max.
+
 %   FLOR - 0 a 4 comodines
 
 flor(Mano) :-
@@ -326,6 +333,15 @@ par(Mano) :-
     
     sort(1,@<,RestoMano,Valores),           %   Verifica que las cartas que quedan 
     length(Valores,1).                      %   en la mano sean iguales.
+
+par(Mano,Valor) :-
+    par(Mano),
+    length(Mano,T),
+    (
+        (T = 5,select(V-_,Mano,Resto),select(V-_,Resto,_),valor(V-_,Max));
+        (T = 4,maplist(valor(),Mano,Valores),max_list(Valores,Max))
+    ),
+    Valor is 1800 - (T*20) - Max.
 
 %   NOTA: se considera sólo un comodín porque al tener más ya es posible formar
 %   figuras de mayor valor.
