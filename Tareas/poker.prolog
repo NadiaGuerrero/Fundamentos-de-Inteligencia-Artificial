@@ -188,6 +188,11 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 
 %   NOTA: Todas las figuras soportan comodines.
 
+%   El segundo predicado de cada figura con aridad 2 calcula un valor numérico basado en la cantidad
+%   de comodines que tiene y la carta más alta, de forma que las figuras con más comodines y cartas
+%   de menor valor tengan un número alto, mientras que las figuras altas tengan un valor menor.
+%   La figura con el menor valor posible es una flor imperial sin comodines con una puntuación de 86.
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %   FLOR IMPERIAL - 0 a 4 comodines
@@ -478,16 +483,16 @@ figurasManos([Mano|RestoManos],[Figura|RestoFiguras],NumJugador) :-
     atom_concat('Jugador - ',NumJugador,Jugador),
     mano_separada(Mano,_,ManoS),
     (
-        (florImperial(ManoS), Figura = 1-[Jugador,'Flor imperial',Mano]);
-        (flor(ManoS), Figura = 2-[Jugador,'Flor',Mano]);
-        (poker(ManoS), Figura = 3-[Jugador,'Poker',Mano]);
-        (fullHouse(ManoS), Figura = 4-[Jugador,'Full house',Mano]);
-        (color(ManoS), Figura = 5-[Jugador,'Color',Mano]);
-        (escalera(ManoS), Figura = 6-[Jugador,'Escalera',Mano]);
-        (tercia(ManoS), Figura = 7-[Jugador,'Tercia',Mano]);
-        (doblePar(ManoS), Figura = 8-[Jugador,'Doble par',Mano]);
-        (par(ManoS), Figura = 9-[Jugador,'Par',Mano]);
-        (nada(ManoS), Figura = 10-[Jugador,'Nada',Mano])
+        (florImperial(ManoS,Valor), Figura = Valor-[Jugador,'Flor imperial',Mano]);
+        (flor(ManoS,Valor), Figura = Valor-[Jugador,'Flor',Mano]);
+        (poker(ManoS,Valor), Figura = Valor-[Jugador,'Poker',Mano]);
+        (fullHouse(ManoS,Valor), Figura = Valor-[Jugador,'Full house',Mano]);
+        (color(ManoS,Valor), Figura = Valor-[Jugador,'Color',Mano]);
+        (escalera(ManoS,Valor), Figura = Valor-[Jugador,'Escalera',Mano]);
+        (tercia(ManoS,Valor), Figura = Valor-[Jugador,'Tercia',Mano]);
+        (doblePar(ManoS,Valor), Figura = Valor-[Jugador,'Doble par',Mano]);
+        (par(ManoS,Valor), Figura = Valor-[Jugador,'Par',Mano]);
+        (nada(ManoS,Valor), Figura = Valor-[Jugador,'Nada',Mano])
     ),
     figurasManos(RestoManos,RestoFiguras,NumJugadorA).
 
@@ -499,8 +504,8 @@ figurasManos([Mano|RestoManos],[Figura|RestoFiguras],NumJugador) :-
 %   resultado. Como cada vez que se ejecuta genera un nuevo mazo, basta con volver a llamarlo en
 %   consola para obtener un nuevo resultado independiente del anterior.
 
-%   Esta verión no realiza un desempate entre manos iguales, las imprime conforme al orden en que
-%   se analizaron.
+%   Esta verión hace un desempate entre manos con figuras iguales, incluso cuando no se tiene 
+%   ninguna las ordena de forma decendente según su carta más alta.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
