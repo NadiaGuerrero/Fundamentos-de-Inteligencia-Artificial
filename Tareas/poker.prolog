@@ -8,10 +8,12 @@
 %   resultado en la consola.
 %
 %   Predicados relevantes:
-%   - 
+%   - repartir/0  repartir().
+%   - figurasManos/3 figurasManos(<Manos>,<Figuras>,<NumJugador>).
 %
 %   Recomendaciones
-%
+%   Ejecutar únicamente repartir/0 las veces que se desee, los resultados serán siempre 
+%   independientes uno de otro.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -370,7 +372,8 @@ valor(Comodín,0) :-
 
 %   Este predicado recorre la lista de manos y por cada una crea un par donde el primer elemento
 %   es un número que corresponde a la figura y el segundo es la mano. Estos pares se almacenan en
-%   la lista <Figuras>.
+%   la lista <Figuras>. El tercer argumento <NumJugador> se utiliza para asignar un número a la mano
+%   que se está analizando, es sólo para facilitar la impresión de los resultados.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -400,6 +403,9 @@ figurasManos([Mano|RestoManos],[Figura|RestoFiguras],NumJugador) :-
 %   repartir/0 es el predicado principal, no recibe parámetros y está limitado a entregar un solo 
 %   resultado. Como cada vez que se ejecuta genera un nuevo mazo, basta con volver a llamarlo en
 %   consola para obtener un nuevo resultado independiente del anterior.
+
+%   Esta verión no realiza un desempate entre manos iguales, las imprime conforme al orden en que
+%   se analizaron.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
