@@ -168,8 +168,9 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 
 %                                               FIGURAS
 
-%   Los siguientes predicados identifican las figuras presentes en las manos de cada jugador, 
-%   las manos se procesan después de haber retirado los comodines con mano_separada/3.
+%   Los siguientes predicados tienen aridad 1, reciben como único argumento una lista de cartas 
+%   <Mano> y son verdaderos cuando la figura está presente en la mano.Todas las manos se procesan 
+%   después de haber retirado los comodines con mano_separada/3.
 %   A continuación se enlistan las figuras en orden descendente acompañadas de una descripción:
 
 %   - Flor imperial     Las cinco cartas más altas de un solo palo
@@ -183,9 +184,7 @@ mano_separada([X|Mano],Comodines,[X|Cartas]) :-
 %   - Par               Dos cartas con el mismo valor
 %   - Nada              Ninguna de las figuras anteriores
 
-%   NOTA: Cada figura incluye una explicación del algoritmo que se utiliza para identificarla.
-%   Además, los predicados de una misma figura están ordenados de acuerdo a la cantidad de 
-%   comodines que contenía la mano original, de 0 a 4.
+%   NOTA: Todas las figuras soportan comodines.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -366,31 +365,63 @@ valor(Comodín,0) :-
     comodín(Comodín).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
-figurasManos([],[]).
-figurasManos([ManoOriginal|RestoManos],[Figura|RestoFiguras]) :-
-    mano_separada(ManoOriginal,_,Mano),
-    (
-        (florImperial(Mano), Figura = 1-Mano);
-        (flor(Mano), Figura = 2-Mano);
-        (poker(Mano), Figura = 3-Mano);
-        (fullHouse(Mano), Figura = 4-Mano);
-        (color(Mano), Figura = 5-Mano);
-        (escalera(Mano), Figura = 6-Mano);
-        (tercia(Mano), Figura = 7-Mano);
-        (doblePar(Mano), Figura = 8-Mano);
-        (par(Mano), Figura = 9-Mano);
-        (nada(Mano), Figura = 10-Mano)
-    ),
-    figurasManos(RestoManos,RestoFiguras).
+
+%                           figurasManos/2  figurasManos(<Manos>,<Figuras>,<Jugador>).
+
+%   Este predicado recorre la lista de manos y por cada una crea un par donde el primer elemento
+%   es un número que corresponde a la figura y el segundo es la mano. Estos pares se almacenan en
+%   la lista <Figuras>.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                       repartir/
+figurasManos([],[],_).
+figurasManos([Mano|RestoManos],[Figura|RestoFiguras],NumJugador) :-
+    NumJugadorA is NumJugador - 1,
+    atom_concat('Jugador - ',NumJugador,Jugador),
+    mano_separada(Mano,_,ManoS),
+    (
+        (florImperial(ManoS), Figura = 1-[Jugador,'Flor imperial',Mano]);
+        (flor(ManoS), Figura = 2-[Jugador,'Flor',Mano]);
+        (poker(ManoS), Figura = 3-[Jugador,'Poker',Mano]);
+        (fullHouse(ManoS), Figura = 4-[Jugador,'Full house',Mano]);
+        (color(ManoS), Figura = 5-[Jugador,'Color',Mano]);
+        (escalera(ManoS), Figura = 6-[Jugador,'Escalera',Mano]);
+        (tercia(ManoS), Figura = 7-[Jugador,'Tercia',Mano]);
+        (doblePar(ManoS), Figura = 8-[Jugador,'Doble par',Mano]);
+        (par(ManoS), Figura = 9-[Jugador,'Par',Mano]);
+        (nada(ManoS), Figura = 10-[Jugador,'Nada',Mano])
+    ),
+    figurasManos(RestoManos,RestoFiguras,NumJugadorA).
 
-%
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                       repartir/0  repartir().
+
+%   repartir/0 es el predicado principal, no recibe parámetros y está limitado a entregar un solo 
+%   resultado. Como cada vez que se ejecuta genera un nuevo mazo, basta con volver a llamarlo en
+%   consola para obtener un nuevo resultado independiente del anterior.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 repartir() :-
     mazo(Mazo),
-    reparte_n_manos(Mazo,_,4,5,Manos).
+    reparte_n_manos(Mazo,_,4,5,Manos),
+    once(figurasManos(Manos,Figuras,4)),
+    sort(Figuras,FigurasOrdenadas),
+    format('~nGenerando manos...~n'),
+    format('~tResultados~t~72|~n~n'),
+    format('~`*t ~72|~`*t~n~n'),
+    format('~tLugar ~3|~tJugador ~15| ~t~t~t~t       Figura ~25| ~t Mano ~37|~n~n'),
+    nth1(1,FigurasOrdenadas,_-Jugador1),
+    imprimeJugador(1,Jugador1),
+    nth1(2,FigurasOrdenadas,_-Jugador2),
+    imprimeJugador(2,Jugador2),
+    nth1(3,FigurasOrdenadas,_-Jugador3),
+    imprimeJugador(3,Jugador3),
+    nth1(4,FigurasOrdenadas,_-Jugador4),
+    imprimeJugador(4,Jugador4),
+    !.
+
+imprimeJugador(Lugar,[Jugador,Figura,Mano]) :-
+    format(' ~a ~t ~a ~22| ~t ~a ~33| ~t~t~t~40|',[Lugar,Jugador,Figura]),
+    format('~w ~w ~w ~w ~w ~n~n',Mano).
