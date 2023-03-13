@@ -282,6 +282,12 @@ escalera(Mano) :-
     Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
     Diferencia < 5.
 
+escalera(Mano,Valor) :-
+    escalera(Mano),
+    maplist(valor(),Mano,Valores),
+    max_list(Valores,Max),
+    Valor is 1200 - Max.
+
 %   NOTA: se limita la cantidad de comodines porque al tener 4 en la mano se 
 %   asegura por lo menos una flor y en caso de que se tenga una de las cartas 
 %   más altas, una flor imperial.
@@ -386,6 +392,7 @@ nada(Mano) :-
     ).
 
 nada(Mano,Valor) :-
+    nada(Mano),
     maplist(valor(),Mano,Valores),
     max_list(Valores,Max),
     Valor is 2000 - Max.
