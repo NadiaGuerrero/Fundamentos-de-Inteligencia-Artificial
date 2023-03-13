@@ -297,6 +297,19 @@ tercia(Mano) :-
     sort(1,@<,RestoMano,Valores),           %   Revisa que el resto de las cartas
     length(Valores,1).                      %   tengan el mismo valor.
 
+tercia(Mano,Valor) :-
+    tercia(Mano),
+    length(Mano,T),
+    (
+        (T = 5,select(V1-_,Mano,Resto1),\+ member(V1-_,Resto1),
+        select(V2-_,Resto1,Resto),\+ member(V2-_,Resto));
+        (T = 4,select(V-_,Mano,Resto),\+ member(V-_,Resto));
+        (Mano = Resto)
+    ),
+    maplist(valor(),Resto,Valores),
+    max_list(Valores,Max),
+    Valor is 1400 - (T*20) - Max.
+
 %   NOTA: se limitan los comodines a 2 porque al tener 3 ya se garantiza un poker,
 %   por lo menos.
 
