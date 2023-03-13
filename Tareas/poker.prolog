@@ -227,15 +227,34 @@ flor(Mano) :-
     Diferencia is Mayor - Menor,            %   que no sea una flor imperial.
     Diferencia < 5.
 
+flor(Mano,Valor) :-
+    length(Mano,T),
+    flor(Mano),
+    maplist(valor(),Mano,Valores),
+    max_list(Valores,Max),
+    Valor is 400 - (T*20) - Max.
+
 %   POKER - 0 a 3 comodines
 
 poker(Mano) :-
     select(_,Mano,RestoMano),               %   Retira una carta (el kicker) y
     sort(1,@<,RestoMano,Valores),           %   se cerciora de que las cartas 
-    length(Valores,1).                      %   restantes tengan el mismo val%or.
+    length(Valores,1).                      %   restantes tengan el mismo valor.
 
-%poker(Mano,Valor) :-
+poker(Mano,Valor) :-
+    poker(Mano),
+    length(Mano,T),
+    (
+        (Mano = [V-_,V-_,V-_,V-_,V-_],Mano = Resto);
+        (Mano = [V-_,V-_,V-_,V-_],Mano = Resto);
+        (Mano = [V-_,V-_,V-_],Mano = Resto);
+        (T =< 5,T > 2,select(V-_,Mano,Resto),\+ member(V-_,Resto));
+        (T = 2, Mano = Resto)
+    ),
+    maplist(valor(),Resto,Valores),
+    max_list(Valores,Max),
 
+    Valor is 600 - (T*20) - Max.
 
 %   FULL HOUSE - 0 o 1 comodín
 
@@ -278,10 +297,11 @@ color(Mano) :-
     length(Palos,1).                        %   sean del mismo palo.
 
 color(Mano,Valor) :-
+    length(Mano,T),
     color(Mano),
     maplist(valor(),Mano,Valores),
     max_list(Valores,Max),
-    Valor is 1000 - Max.
+    Valor is 1000 - (T*20) - Max.
 
 %   NOTA: se restringe la cantidad de comodines a 3 porque aunque es posible
 %   tener los 4, una combinación de ese tipo sería también una flor, que es
@@ -306,9 +326,10 @@ escalera(Mano) :-
 
 escalera(Mano,Valor) :-
     escalera(Mano),
+    length(Mano,T),
     maplist(valor(),Mano,Valores),
     max_list(Valores,Max),
-    Valor is 1200 - Max.
+    Valor is 1200 - (T*20) - Max.
 
 %   NOTA: se limita la cantidad de comodines porque al tener 4 en la mano se 
 %   asegura por lo menos una flor y en caso de que se tenga una de las cartas 
