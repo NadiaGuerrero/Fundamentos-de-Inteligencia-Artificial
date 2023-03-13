@@ -232,7 +232,10 @@ flor(Mano) :-
 poker(Mano) :-
     select(_,Mano,RestoMano),               %   Retira una carta (el kicker) y
     sort(1,@<,RestoMano,Valores),           %   se cerciora de que las cartas 
-    length(Valores,1).                      %   restantes tengan el mismo valor.
+    length(Valores,1).                      %   restantes tengan el mismo val%or.
+
+%poker(Mano,Valor) :-
+
 
 %   FULL HOUSE - 0 o 1 comodín
 
@@ -252,6 +255,19 @@ fullHouse(Mano) :-
     Resto = [V2-_,V2-_,V2-_],               %   Recibe una tercia y una carta distinta.
     V1 \== V2.
 
+fullHouse(Mano,Valor) :-
+    fullHouse(Mano),
+    length(Mano,T),
+    (
+        (T = 5,select(V1-_,Mano,Resto1),select(V1-_,Resto1,Resto),\+ member(V1-_,Resto));
+        (T = 4,select(V1-_,Mano,Resto1),select(V1-_,Resto1,Resto2),\+ member(V1-_,Resto2),
+        Resto2 = [V2-_,V2-_],Mano = Resto);
+        (T = 4,select(V-_,Mano,Resto),\+ member(V-_,Resto))
+    ),
+    maplist(valor(),Resto,Valores),
+    max_list(Valores,Max),
+    Valor is 800 - (T*20) - Max.
+
 %   COLOR - 0 a 3 comodines
 
 color(Mano) :-
@@ -260,6 +276,12 @@ color(Mano) :-
 
     sort(2,@<,Mano,Palos),                  %   Revisa que todas las cartas
     length(Palos,1).                        %   sean del mismo palo.
+
+color(Mano,Valor) :-
+    color(Mano),
+    maplist(valor(),Mano,Valores),
+    max_list(Valores,Max),
+    Valor is 1000 - Max.
 
 %   NOTA: se restringe la cantidad de comodines a 3 porque aunque es posible
 %   tener los 4, una combinación de ese tipo sería también una flor, que es
