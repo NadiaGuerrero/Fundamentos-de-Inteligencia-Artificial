@@ -24,6 +24,9 @@
 %
 %   Predicados relevantes:
 %   - visualiza_vecindario(<Vecindario>).
+%
+%   Recomendaciones: Utilizar la siguiente consulta para obtener un resultado fácil de leer.
+%   - visualiza_vecindario(V),print_term(V,[]).
 
 :- use_module( library(clpfd) ).
 
@@ -44,3 +47,41 @@
 %   que <Vecindario> unifique con cada una.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+visualiza_vecindario(V) :-
+    V = [casa(1,_,_,_,_),casa(2,_,_,_,_),casa(3,_,_,_,_),casa(4,_,_,_,_)],
+
+    member(casa(PosiciónBoliche,_,_,boliche,_),V),          % 1)
+    member(casa(PosiciónNatación,_,_,natación,_),V),
+    ((PosiciónBoliche #= PosiciónNatación + 3) #\/
+    (PosiciónBoliche #= PosiciónNatación - 3)),
+
+    member(casa(PosiciónIrlandés,_,irlandés,_,_),V),        % 2)
+    member(casa(PosiciónVolley,_,_,voleyball,_),V),
+    ((PosiciónIrlandés #= PosiciónVolley + 2) #\/
+    (PosiciónIrlandés #= PosiciónVolley - 2)),
+
+    member(casa(2,negro,_,_,_),V),                          % 3)
+
+    member(casa(PosiciónCaballos,_,_,_,caballos),V),        % 4)
+    member(casa(PosiciónRojo,rojo,_,_,_),V),
+    ((PosiciónCaballos #= PosiciónRojo + 2) #\/
+    (PosiciónCaballos #= PosiciónRojo - 2)),
+
+    member(casa(PosiciónTortugas,_,_,_,tortugas),V),        % 5)
+    member(casa(PosiciónEscocés,_,escocés,_,_),V),
+    ((PosiciónTortugas #= PosiciónEscocés + 1) #\/
+    (PosiciónTortugas #= PosiciónEscocés - 1)),
+    
+    member(casa(PosiciónMariposas,_,_,_,mariposas),V),      % 6)
+    ((PosiciónCaballos #= PosiciónMariposas + 3) #\/
+    (PosiciónCaballos #= PosiciónMariposas - 3)),
+
+    member(casa(PosiciónTenis,_,_,tenis,_),V),              % 7)
+    PosiciónBoliche #>  PosiciónTenis,
+
+    member(casa(PosiciónBlanco,blanco,_,_,_),V),            % 8)
+    ((PosiciónVolley #= PosiciónBlanco + 2) #\/
+    (PosiciónVolley #= PosiciónBlanco - 2)),
+    
+    member(casa(1,_,ruso,_,_),V).                           % 9)
