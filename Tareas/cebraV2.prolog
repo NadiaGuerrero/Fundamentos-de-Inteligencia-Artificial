@@ -21,6 +21,9 @@
 %
 %   Predicados relevantes:
 %   - visualiza_vecindario(<Vecindario>).
+%
+%   Recomendaciones: Utilizar la siguiente consulta para obtener un resultado fácil de leer.
+%   - visualiza_vecindario(V),print_term(V,[]).
 
 :- use_module( library(clpfd) ).
 
