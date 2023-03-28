@@ -24,7 +24,7 @@
 
 %   Se utiliza para representar las casas del vecindario, cada una cuenta con dos atributos:
 %   el color de la casa y la nacionalidad de su ocupante. Todas las casas están contenidas en
-%   una lista que representa al vecindario.
+%   una lista ordenada que representa al vecindario.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
