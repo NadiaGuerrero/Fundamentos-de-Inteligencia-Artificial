@@ -1,4 +1,7 @@
-﻿:- use_module( library(clpfd) ).
+﻿%   Consulta:
+%   vecindario(V),V = [Países,Colores,Mascotas,Bebidas,Cigarros].
+
+:- use_module( library(clpfd) ).
 
 vecindario(V) :-
     Variables = [   Inglés, Español, Ukraniano, Japonés, Noruego,
