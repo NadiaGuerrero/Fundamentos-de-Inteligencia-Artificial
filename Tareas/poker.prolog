@@ -511,8 +511,8 @@ figurasManos([Mano|RestoManos],[Figura|RestoFiguras],NumJugador) :-
 
 repartir() :-
     mazo(Mazo),
-    reparte_n_manos(Mazo,_,4,5,Manos),
-    once(figurasManos(Manos,Figuras,4)),
+    reparte_n_manos(Mazo,_,10,5,Manos),
+    once(figurasManos(Manos,Figuras,10)),
     sort(Figuras,FigurasOrdenadas),
     format('~nGenerando manos...~n'),
     format('~tResultados~t~72|~n~n'),
@@ -526,6 +526,18 @@ repartir() :-
     imprimeJugador(3,Jugador3),
     nth1(4,FigurasOrdenadas,_-Jugador4),
     imprimeJugador(4,Jugador4),
+    nth1(5,FigurasOrdenadas,_-Jugador5),
+    imprimeJugador(5,Jugador5),
+    nth1(6,FigurasOrdenadas,_-Jugador6),
+    imprimeJugador(6,Jugador6),
+    nth1(7,FigurasOrdenadas,_-Jugador7),
+    imprimeJugador(7,Jugador7),
+    nth1(8,FigurasOrdenadas,_-Jugador8),
+    imprimeJugador(8,Jugador8),
+    nth1(9,FigurasOrdenadas,_-Jugador9),
+    imprimeJugador(9,Jugador9),
+    nth1(10,FigurasOrdenadas,_-Jugador10),
+    imprimeJugador(10,Jugador10),
     !.
 
 imprimeJugador(Lugar,[Jugador,Figura,Mano]) :-
