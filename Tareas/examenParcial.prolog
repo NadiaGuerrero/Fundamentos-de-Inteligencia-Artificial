@@ -93,3 +93,33 @@ grado(Estación,Grado) :-
     findall(EstaciónAdyacente,sigue(EstaciónAdyacente,Estación,_),B),
     length(A,LA), length(B,LB),
     Grado #= LA + LB.
+
+misma_línea(EstaciónInicial,EstaciónDestino) :-
+    (sigue(EstaciónInicial,_,Línea);
+    sigue(_,EstaciónInicial,Línea)),
+    (sigue(EstaciónDestino,_,Línea);
+    sigue(_,EstaciónDestino,Línea)),!.
+
+tiempo_arista(_,[_],0-no).
+
+tiempo_arista(EstaciónDestino,[_,EstaciónDestino|_],TiempoArista-no) :-
+    valor_parámetro(tiempo_tramo,TiempoTramo),
+    grado(EstaciónDestino,Grado),
+    TiempoArista #= TiempoTramo * Grado.
+    
+tiempo_arista(EstaciónDestino,Ruta,TiempoArista-no) :-
+    append(_,[EstaciónPrevia,_,EstaciónDestino|_],Ruta),
+    misma_línea(EstaciónPrevia,EstaciónDestino),
+    valor_parámetro(tiempo_tramo,TiempoTramo),
+    grado(EstaciónDestino,Grado),
+    TiempoArista #= TiempoTramo * Grado.
+
+tiempo_arista(EstaciónDestino,Ruta,TiempoArista-Transborde) :-
+    append(_,[EstaciónPrevia,Estación,EstaciónDestino|_],Ruta),
+    \+ misma_línea(EstaciónPrevia,EstaciónDestino),
+    valor_parámetro(tiempo_transbordo,TiempoTransborde),
+    valor_parámetro(tiempo_tramo,TiempoTramo),
+    grado(EstaciónDestino,Grado),
+    TiempoArista #= TiempoTransborde + (TiempoTramo * Grado),
+    (sigue(Estación,EstaciónDestino,Transborde);
+    sigue(EstaciónDestino,Estación,Transborde)).
