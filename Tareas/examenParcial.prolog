@@ -37,6 +37,8 @@
 %   Recomendaciones: 
 %
 
+:- use_module( library(clpfd) ).
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %      navegar/4  navegar(<EstaciónInicial>,<EstaciónFinal>,<EstacionesVisitadas>,<Ruta>).
