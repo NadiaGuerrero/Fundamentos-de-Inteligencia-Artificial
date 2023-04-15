@@ -41,7 +41,7 @@
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%      navegar/4  navegar(<EstaciónInicial>,<EstaciónFinal>,<EstacionesVisitadas>,<Ruta>).
+%      navegar/4  navegar(<EstaciónInicial>,<EstaciónDestino>,<EstacionesVisitadas>,<Ruta>).
 
 %   Este predicado encuentra rutas hamiltonianas entre dos estaciones. En su forma canónica
 %   recibe como parámetro las dos estaciones y la lista de aquellas que ya fueron visitadas. 
@@ -60,33 +60,33 @@
 
 navegar(Estación,Estación,_,[Estación]).
 
-navegar(EstaciónInicial,EstaciónFinal,_,[EstaciónInicial,EstaciónFinal]) :-
-    EstaciónInicial \== EstaciónFinal,                       
-    (sigue(EstaciónInicial,EstaciónFinal,_);        % Verifica que las estaciones sean      
-    sigue(EstaciónFinal,EstaciónInicial,_)).        % contiguas sin importar el orden.
+navegar(EstaciónInicial,EstaciónDestino,_,[EstaciónInicial,EstaciónDestino]) :-
+    EstaciónInicial \== EstaciónDestino,                       
+    (sigue(EstaciónInicial,EstaciónDestino,_);        % Verifica que las estaciones sean      
+    sigue(EstaciónDestino,EstaciónInicial,_)).        % contiguas sin importar el orden.
 
-navegar(EstaciónInicial,EstaciónFinal,EstacionesVisitadas,[EstaciónInicial|Ruta]) :-
-    EstaciónInicial \== EstaciónFinal,                       
+navegar(EstaciónInicial,EstaciónDestino,EstacionesVisitadas,[EstaciónInicial|Ruta]) :-
+    EstaciónInicial \== EstaciónDestino,                       
     (sigue(EstaciónInicial,X,_);
     sigue(X,EstaciónInicial,_)),
     EstaciónInicial \== X,
     \+ member(X,EstacionesVisitadas),
-    navegar(X,EstaciónFinal,[X|EstacionesVisitadas],Ruta).
+    navegar(X,EstaciónDestino,[X|EstacionesVisitadas],Ruta).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                   ruta/3  ruta(<EstaciónInicial>,<EstaciónFinal>,<Ruta>).
+%                   ruta/3  ruta(<EstaciónInicial>,<EstaciónDestino>,<Ruta>).
 
 %   Este es un predicado de interfaz para navegar/4, recibe los nombres de dos estaciones y
-%   devueve una <Ruta> a seguir, que es una lista de estaciones.
+%   devuelve una <Ruta> a seguir, que es una lista de estaciones.
 
 %   Al igual que  navegar/4, se puede utilizar de formas no canónicas con las mismas 
 %   limitaciones.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-ruta(EstaciónInicial,EstaciónFinal,Ruta) :-
-    navegar(EstaciónInicial,EstaciónFinal,[EstaciónInicial],Ruta).
+ruta(EstaciónInicial,EstaciónDestino,Ruta) :-
+    navegar(EstaciónInicial,EstaciónDestino,[EstaciónInicial],Ruta).
     
 grado(Estación,Grado) :-
     findall(EstaciónAdyacente,sigue(Estación,EstaciónAdyacente,_),A),
