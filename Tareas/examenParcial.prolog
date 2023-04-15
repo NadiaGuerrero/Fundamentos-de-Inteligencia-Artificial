@@ -87,3 +87,9 @@ navegar(EstaciónInicial,EstaciónFinal,EstacionesVisitadas,[EstaciónInicial|Ru
 
 ruta(EstaciónInicial,EstaciónFinal,Ruta) :-
     navegar(EstaciónInicial,EstaciónFinal,[EstaciónInicial],Ruta).
+    
+grado(Estación,Grado) :-
+    findall(EstaciónAdyacente,sigue(Estación,EstaciónAdyacente,_),A),
+    findall(EstaciónAdyacente,sigue(EstaciónAdyacente,Estación,_),B),
+    length(A,LA), length(B,LB),
+    Grado #= LA + LB.
