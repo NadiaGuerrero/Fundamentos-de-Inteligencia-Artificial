@@ -201,3 +201,18 @@ suma_tiempos([TiempoActual-_],TiempoTotal) :-
 suma_tiempos([TiempoActual-_|TiempoAristas],TiempoTotal) :-
     TiempoTotal #= TiempoAnterior + TiempoActual,
     suma_tiempos(TiempoAristas,TiempoAnterior).
+
+ruta_corta([MejorRuta], MejorRuta,ListaTramos,TiempoMínimo) :-
+    tiempo_ruta(MejorRuta,ListaTramos,TiempoMínimo).
+
+ruta_corta(Rutas,MejorRuta,ListaTramos,TiempoMínimo):- 
+    Rutas = [_,_|_],
+    maplist(tiempo_ruta,Rutas,TiempoAristas,TiempoTotal),
+    min_list(TiempoTotal,TiempoMínimo),
+    nth0(N,TiempoTotal,TiempoMínimo),
+    nth0(N,Rutas,MejorRuta),
+    nth0(N,TiempoAristas,ListaTramos).
+
+mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo) :-
+    findnsols(2000,R,ruta(EstaciónOrigen,EstaciónDestino,R),Rutas),
+    ruta_corta(Rutas,MejorRuta,_,Tiempo).
