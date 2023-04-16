@@ -215,4 +215,23 @@ ruta_corta(Rutas,MejorRuta,ListaTramos,TiempoMínimo):-
 
 mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo) :-
     findnsols(2000,R,ruta(EstaciónOrigen,EstaciónDestino,R),Rutas),
-    ruta_corta(Rutas,MejorRuta,_,Tiempo).
+    ruta_corta(Rutas,MejorRuta,_,Tiempo),
+    format('Tiempo = '),
+    imprimir_tiempo(Tiempo).
+
+imprimir_tiempo(Tiempo) :-
+    Tiempo #> 60,
+    Horas #= Tiempo // 60,
+    Minutos #> 0,
+    Minutos #= Tiempo mod 60,
+    format('~w horas y ~w minutos~n', [Horas,Minutos]).
+
+imprimir_tiempo(Tiempo) :-
+    Tiempo #< 60,
+    format('~w minutos~n', [Tiempo]).
+
+imprimir_tiempo(Tiempo) :-
+    Tiempo #> 0,
+    Tiempo mod 60 #= 0,
+    Horas #= Tiempo // 60,
+    format('~w horas ~n', [Horas]).
