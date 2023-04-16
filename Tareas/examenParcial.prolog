@@ -129,3 +129,18 @@ tiempo_arista(Ruta,EstaciónDestino,TiempoArista-Transborde) :-
     TiempoArista #= TiempoTransborde + (TiempoTramo * Grado),
     (sigue(EstaciónSiguiente,EstaciónDestino,Transborde);
     sigue(EstaciónDestino,EstaciónSiguiente,Transborde)).
+
+tiempo_ruta(Ruta,TiempoAristas,TiempoTotal) :-
+    Ruta = [_|Aristas],
+    maplist(tiempo_arista(Ruta),Aristas,TiempoAristas),
+    suma_tiempos(TiempoAristas,TiempoTramos),
+    valor_parámetro(tiempo_inicial,TiempoInicial),
+    valor_parámetro(tiempo_final,TiempoFinal),
+    TiempoTotal #= TiempoTramos + TiempoInicial + TiempoFinal.
+
+suma_tiempos([TiempoActual-_],TiempoTotal) :-
+    TiempoTotal = TiempoActual.
+
+suma_tiempos([TiempoActual-_|TiempoAristas],TiempoTotal) :-
+    TiempoTotal #= TiempoAnterior + TiempoActual,
+    suma_tiempos(TiempoAristas,TiempoAnterior).
