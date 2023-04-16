@@ -170,7 +170,12 @@ tiempo_arista(Ruta,EstaciónDestino,TiempoArista-Transborde) :-
 %   dos estaciones y si es que existe algún transborde. Por su parte <TiempoTotal> es un número
 %   entero conformado por la suma de los valores de los tramos y los tiempos inicial y final.
 
+%   Se considera que el tiempo para ir de una estación a sí misma es 0 y evidentemente no hay 
+%   transbordes.
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+tiempo_ruta([_],[0-no],0).
 
 tiempo_ruta(Ruta,TiempoAristas,TiempoTotal) :-
     Ruta = [_|Aristas],
