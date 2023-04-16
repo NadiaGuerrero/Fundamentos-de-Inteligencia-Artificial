@@ -88,17 +88,47 @@ navegar(EstaciónInicial,EstaciónDestino,EstacionesVisitadas,[EstaciónInicial|
 ruta(EstaciónInicial,EstaciónDestino,Ruta) :-
     navegar(EstaciónInicial,EstaciónDestino,[EstaciónInicial],Ruta).
     
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                           grado/2 grado(<Estación>,<Grado>).
+
+%   Recibe una <Estación> y encuentra la cantidad de estaciones adyacentes a ella, es decir,
+%   el <Grado>.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+    
 grado(Estación,Grado) :-
     findall(EstaciónAdyacente,sigue(Estación,EstaciónAdyacente,_),A),
     findall(EstaciónAdyacente,sigue(EstaciónAdyacente,Estación,_),B),
     length(A,LA), length(B,LB),
     Grado #= LA + LB.
+    
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%               misma_línea/2   misma_línea(<EstaciónInicial>,<EstaciónDestino>).
+
+%   Verifica que las dos estaciones proporcionadas pertenezcan a la misma línea del metro.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 misma_línea(EstaciónInicial,EstaciónDestino) :-
     (sigue(EstaciónInicial,_,Línea);
     sigue(_,EstaciónInicial,Línea)),
     (sigue(EstaciónDestino,_,Línea);
     sigue(_,EstaciónDestino,Línea)),!.
+    
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%          tiempo_arista/3 tiempo_arista(<Ruta>,<EstaciónDestino>,<TiempoArista-Transborde>).
+
+%   Calcula el tiempo que tomará el trayecto entre dos estaciones contiguas de una misma ruta, 
+%   para ello recibe la ruta completa en forma de lista y la estación destino, que es a la que  
+%   se pretende llegar, el tercer argumento es un par ordenado que contiene la cantidad de 
+%   minutos que se necesitan para llegar a la estación destino. El segundo elemento indica si  
+%   hubo transborde en ese tramo. En caso de que no lo haya, <Transborde> tendrá el valor 'no', 
+%   si sí lo hubo, <Transborde> será el nombre de la línea a la que se transbordó.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 tiempo_arista([_],_,0-no).
 
@@ -129,6 +159,18 @@ tiempo_arista(Ruta,EstaciónDestino,TiempoArista-Transborde) :-
     TiempoArista #= TiempoTransborde + (TiempoTramo * Grado),
     (sigue(EstaciónSiguiente,EstaciónDestino,Transborde);
     sigue(EstaciónDestino,EstaciónSiguiente,Transborde)).
+    
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%               tiempo_ruta/3   tiempo_ruta(<Ruta>,<TiempoAristas>,<TiempoTotal>).
+
+%   Calcula el tiempo total que tomará recorrer una ruta completa, incluyendo los tiempos
+%   inicial y final. Recibe una ruta y devuelve dos resultados: <TiempoAristas> y <TiempoTotal>
+%   el primero es una lista de pares ordenados que contiene el tiempo que toma cada tramo de 
+%   dos estaciones y si es que existe algún transborde. Por su parte <TiempoTotal> es un número
+%   entero conformado por la suma de los valores de los tramos y los tiempos inicial y final.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 tiempo_ruta(Ruta,TiempoAristas,TiempoTotal) :-
     Ruta = [_|Aristas],
@@ -137,6 +179,15 @@ tiempo_ruta(Ruta,TiempoAristas,TiempoTotal) :-
     valor_parámetro(tiempo_inicial,TiempoInicial),
     valor_parámetro(tiempo_final,TiempoFinal),
     TiempoTotal #= TiempoTramos + TiempoInicial + TiempoFinal.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                 suma_tiempos/2  suma_tiempos(<TiempoAristas>,<TiempoTotal>).
+
+%   Este predicado recibe una lista de pares ordenados y devuelve la suma de todas las keys
+%   de la lista-
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 suma_tiempos([TiempoActual-_],TiempoTotal) :-
     TiempoTotal = TiempoActual.
