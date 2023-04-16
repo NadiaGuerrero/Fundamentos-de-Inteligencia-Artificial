@@ -102,24 +102,30 @@ misma_línea(EstaciónInicial,EstaciónDestino) :-
 
 tiempo_arista([_],_,0-no).
 
-tiempo_arista([_,EstaciónDestino|_],EstaciónDestino,TiempoArista-no) :-
+tiempo_arista([EstaciónDestino|_],EstaciónDestino,TiempoArista-no) :-
     valor_parámetro(tiempo_tramo,TiempoTramo),
     grado(EstaciónDestino,Grado),
     TiempoArista #= TiempoTramo * Grado.
     
 tiempo_arista(Ruta,EstaciónDestino,TiempoArista-no) :-
-    append(_,[EstaciónPrevia,_,EstaciónDestino|_],Ruta),
-    misma_línea(EstaciónPrevia,EstaciónDestino),
+    append(_,[EstaciónDestino],Ruta),
+    valor_parámetro(tiempo_tramo,TiempoTramo),
+    grado(EstaciónDestino,Grado),
+    TiempoArista #= TiempoTramo * Grado.
+
+tiempo_arista(Ruta,EstaciónDestino,TiempoArista-no) :-
+    append(_,[EstaciónPrevia,EstaciónDestino,EstaciónSiguiente|_],Ruta),
+    misma_línea(EstaciónPrevia,EstaciónSiguiente),
     valor_parámetro(tiempo_tramo,TiempoTramo),
     grado(EstaciónDestino,Grado),
     TiempoArista #= TiempoTramo * Grado.
 
 tiempo_arista(Ruta,EstaciónDestino,TiempoArista-Transborde) :-
-    append(_,[EstaciónPrevia,Estación,EstaciónDestino|_],Ruta),
-    \+ misma_línea(EstaciónPrevia,EstaciónDestino),
+    append(_,[EstaciónPrevia,EstaciónDestino,EstaciónSiguiente|_],Ruta),
+    \+ misma_línea(EstaciónPrevia,EstaciónSiguiente),
     valor_parámetro(tiempo_transbordo,TiempoTransborde),
     valor_parámetro(tiempo_tramo,TiempoTramo),
     grado(EstaciónDestino,Grado),
     TiempoArista #= TiempoTransborde + (TiempoTramo * Grado),
-    (sigue(Estación,EstaciónDestino,Transborde);
-    sigue(EstaciónDestino,Estación,Transborde)).
+    (sigue(EstaciónSiguiente,EstaciónDestino,Transborde);
+    sigue(EstaciónDestino,EstaciónSiguiente,Transborde)).
