@@ -41,11 +41,11 @@
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%      navegar/4  navegar(<EstaciónInicial>,<EstaciónDestino>,<EstacionesVisitadas>,<Ruta>).
+%      navegar/4  navegar(<EstaciónOrigen>,<EstaciónDestino>,<EstacionesVisitadas>,<Ruta>).
 
 %   Este predicado encuentra rutas hamiltonianas entre dos estaciones. En su forma canónica
 %   recibe como parámetro las dos estaciones y la lista de aquellas que ya fueron visitadas. 
-%   Es necesario que <EstacionesVisitadas> contenga a <EstaciónInicial> para evitar que se 
+%   Es necesario que <EstacionesVisitadas> contenga a <EstaciónOrigen> para evitar que se 
 %   haya repeticiones. El predicado devuelve una lista que es la ruta a seguir.
 
 %   Se puede emplear de formas no canónicas si se colocan variables en el lugar de las 
@@ -60,22 +60,23 @@
 
 navegar(Estación,Estación,_,[Estación]).
 
-navegar(EstaciónInicial,EstaciónDestino,_,[EstaciónInicial,EstaciónDestino]) :-
-    EstaciónInicial \== EstaciónDestino,                       
-    (sigue(EstaciónInicial,EstaciónDestino,_);        % Verifica que las estaciones sean      
-    sigue(EstaciónDestino,EstaciónInicial,_)).        % contiguas sin importar el orden.
+navegar(EstaciónOrigen,EstaciónDestino,_,[EstaciónOrigen,EstaciónDestino]) :-
+    EstaciónOrigen \== EstaciónDestino,                       
+    (sigue(EstaciónOrigen,EstaciónDestino,_);        % Verifica que las estaciones sean      
+    sigue(EstaciónDestino,EstaciónOrigen,_)).        % contiguas sin importar el orden.
 
-navegar(EstaciónInicial,EstaciónDestino,EstacionesVisitadas,[EstaciónInicial|Ruta]) :-
-    EstaciónInicial \== EstaciónDestino,                       
-    (sigue(EstaciónInicial,X,_);
-    sigue(X,EstaciónInicial,_)),
-    EstaciónInicial \== X,
+navegar(EstaciónOrigen,EstaciónDestino,EstacionesVisitadas,[EstaciónOrigen|Ruta]) :-
+    EstaciónOrigen \== EstaciónDestino,
+    \+ sigue(EstaciónOrigen,EstaciónDestino,_),
+    \+ sigue(EstaciónDestino,EstaciónOrigen,_),    
+    (sigue(EstaciónOrigen,X,_);
+    sigue(X,EstaciónOrigen,_)),
     \+ member(X,EstacionesVisitadas),
     navegar(X,EstaciónDestino,[X|EstacionesVisitadas],Ruta).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                   ruta/3  ruta(<EstaciónInicial>,<EstaciónDestino>,<Ruta>).
+%                   ruta/3  ruta(<EstaciónOrigen>,<EstaciónDestino>,<Ruta>).
 
 %   Este es un predicado de interfaz para navegar/4, recibe los nombres de dos estaciones y
 %   devuelve una <Ruta> a seguir, que es una lista de estaciones.
@@ -85,8 +86,8 @@ navegar(EstaciónInicial,EstaciónDestino,EstacionesVisitadas,[EstaciónInicial|
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-ruta(EstaciónInicial,EstaciónDestino,Ruta) :-
-    navegar(EstaciónInicial,EstaciónDestino,[EstaciónInicial],Ruta).
+ruta(EstaciónOrigen,EstaciónDestino,Ruta) :-
+    navegar(EstaciónOrigen,EstaciónDestino,[EstaciónOrigen],Ruta).
     
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -105,15 +106,15 @@ grado(Estación,Grado) :-
     
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%               misma_línea/2   misma_línea(<EstaciónInicial>,<EstaciónDestino>).
+%               misma_línea/2   misma_línea(<EstaciónOrigen>,<EstaciónDestino>).
 
 %   Verifica que las dos estaciones proporcionadas pertenezcan a la misma línea del metro.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-misma_línea(EstaciónInicial,EstaciónDestino) :-
-    (sigue(EstaciónInicial,_,Línea);
-    sigue(_,EstaciónInicial,Línea)),
+misma_línea(EstaciónOrigen,EstaciónDestino) :-
+    (sigue(EstaciónOrigen,_,Línea);
+    sigue(_,EstaciónOrigen,Línea)),
     (sigue(EstaciónDestino,_,Línea);
     sigue(_,EstaciónDestino,Línea)),!.
     
@@ -190,7 +191,7 @@ tiempo_ruta(Ruta,TiempoAristas,TiempoTotal) :-
 %                 suma_tiempos/2  suma_tiempos(<TiempoAristas>,<TiempoTotal>).
 
 %   Este predicado recibe una lista de pares ordenados y devuelve la suma de todas las keys
-%   de la lista-
+%   de la lista.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
