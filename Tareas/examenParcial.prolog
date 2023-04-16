@@ -213,9 +213,12 @@ ruta_corta(Rutas,MejorRuta,ListaTramos,TiempoMínimo):-
     nth0(N,Rutas,MejorRuta),
     nth0(N,TiempoAristas,ListaTramos).
 
-mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo) :-
+calcula_mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo) :-
     findnsols(2000,R,ruta(EstaciónOrigen,EstaciónDestino,R),Rutas),
-    ruta_corta(Rutas,MejorRuta,_,Tiempo),
+    ruta_corta(Rutas,MejorRuta,_,Tiempo).
+
+mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo) :-
+    calcula_mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo),
     format('Tiempo = '),
     imprimir_tiempo(Tiempo).
 
@@ -235,3 +238,82 @@ imprimir_tiempo(Tiempo) :-
     Tiempo mod 60 #= 0,
     Horas #= Tiempo // 60,
     format('~w horas ~n', [Horas]).
+
+reporte_tiempo(EstaciónOrigen, EstaciónDestino) :-
+    calcula_mejor_ruta(EstaciónOrigen, EstaciónDestino, MejorRuta, Tiempo),
+
+    format('~nTiempo total de viaje: ~w minutos = ',[Tiempo]),
+    imprimir_tiempo(Tiempo),
+
+    valor_parámetro(tiempo_inicial,TiempoInicial),
+    MejorRuta = [InicioN|_],
+    convertir_átomo(InicioN,Inicio),
+    format('Inicio: ~w, ~w minutos~n',[Inicio,TiempoInicial]),
+
+    tiempo_ruta(MejorRuta,TiempoTramos,_),
+    once(imprimir_tramos(1,MejorRuta,TiempoTramos)),
+
+    valor_parámetro(tiempo_final,TiempoFinal),
+    append(_,[FinN],MejorRuta),
+    convertir_átomo(FinN,Fin),
+    format('Fin: ~w, ~w minutos~n~n',[Fin,TiempoFinal]).
+
+imprimir_tramos(_,[_],_).
+
+imprimir_tramos(Posición,[E1,E2|Ruta],[Tiempo-Transborde|Tramos]) :-
+    Ruta \== [],
+    (sigue(E2,E1,L1) ; sigue(E1,E2,L1)),
+    (sigue(E2,_,L2) ; sigue(_,E2,L2)),
+    L1 \== L2, % hay posibilidad de transborde
+
+    convertir_átomo(E1,E1N), convertir_átomo(E2,E2N),
+
+    ((Transborde == no,
+    format('~w) ~w a ~w, ~w minutos, sin transborde~n',[Posición,E1N,E2N,Tiempo]));
+    
+    (Transborde \== no,
+    format('~w) ~w a ~w, ~w minutos, transborde a ~w~n',[Posición,E1N,E2N,Tiempo,Transborde]))),
+    
+    PosiciónSiguiente #= Posición + 1,
+    once(imprimir_tramos(PosiciónSiguiente,[E2|Ruta],Tramos)).
+
+imprimir_tramos(Posición,[E1,E2|Ruta],[Tiempo-_|Tramos]) :-
+    convertir_átomo(E1,E1N), convertir_átomo(E2,E2N),
+    format('~w) ~w a ~w, ~w minutos~n',[Posición,E1N,E2N,Tiempo]),
+    PosiciónSiguiente #= Posición + 1,
+    once(imprimir_tramos(PosiciónSiguiente,[E2|Ruta],Tramos)).
+
+convertir_átomo(Átomo,Texto) :-
+    atom_chars(Átomo,ListaÁtomo),
+    once(agregar_espacios(ListaÁtomo,ÁtomoConEspacio)),
+    agregar_mayúsculas(ÁtomoConEspacio,ÁtomoConMayúsculas),
+    atom_chars(Texto,ÁtomoConMayúsculas).
+
+agregar_espacios(Átomo,Átomo) :-
+    \+ member('_',Átomo).
+
+agregar_espacios(Átomo,ÁtomoConEspacio) :-
+    member('_',Átomo),
+    nth0(N,Átomo,'_',Resto),
+    nth0(N,NuevoÁtomo,' ',Resto),
+    agregar_espacios(NuevoÁtomo,ÁtomoConEspacio).
+
+agregar_mayúsculas(Átomo,ÁtomoConMayúsculas) :-
+    \+ member(' ',Átomo),
+    Átomo = [A|Resto],
+    Letras = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z],
+    member(A,Letras),
+    upcase_atom(A,Mayúscula),
+    ÁtomoConMayúsculas = [Mayúscula|Resto].
+
+agregar_mayúsculas(Átomo,ÁtomoConMayúsculas) :-
+    member(' ',Átomo),
+    append(Inicio,[' '|Resto],Átomo),
+    agregar_mayúsculas(Inicio,InicioN),
+    agregar_mayúsculas(Resto,RestoN),
+    append(InicioN,[' '|RestoN],ÁtomoConMayúsculas).
+
+agregar_mayúsculas(Átomo,Átomo) :-
+    Átomo = [A|_],
+    Letras = [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z],
+    \+ member(A,Letras).
