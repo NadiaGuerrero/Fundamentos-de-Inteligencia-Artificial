@@ -170,3 +170,21 @@ bfs([Candidato|Frontera],Ruta) :-
     sucesores(Candidato,Sucesores),
     append(Frontera,Sucesores,NuevaAgenda),
     bfs(NuevaAgenda,Ruta).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   busca_IDS/3 busca_IDS(<EstadoInicial>,<EstadoMeta>,<Plan>).
+
+%   Este predicado encuentra una ruta entre el estado inicial y el estado final utilizando la 
+%   estrategia de búsqueda IDS (Iterative Deepening Search). Para ello reutiliza el predicado
+%   de búsqueda dfs/2. Este algoritmo se comporta de manera similar a BFS.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+busca_IDS(EstadoInicial,EstadoMeta,Plan) :-
+    retractall( edo_meta( _ ) ),
+    assert(edo_meta(EstadoMeta)),
+    dfs([[EstadoInicial]],_),   % Repetir esta instrucción con variable anónima permite que el 
+    length(P,_),                % predicado falle si es que no existen rutas.
+    dfs([[EstadoInicial]],P),
+    reverse(P,Plan).
