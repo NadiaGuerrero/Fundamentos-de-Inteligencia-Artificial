@@ -30,8 +30,11 @@
 %   - busca_IDS(<EstadoInicial>,<EstadoMeta>,<Plan>).
 %   - despliega(<Plan>).
 %
-%   Recomendaciones: 
+%   Recomendaciones: Ejecutar una búsqueda seguida del predicado despliega/1.
 %   
+%   - busca_DFS([3,3,0,0,o],[0,0,3,3,d],P),despliega(P).
+%   - busca_BFS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
+%   - busca_IDS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
 
 :- use_module( library(clpfd) ).
 
@@ -188,3 +191,77 @@ busca_IDS(EstadoInicial,EstadoMeta,Plan) :-
     length(P,_),                % predicado falle si es que no existen rutas.
     dfs([[EstadoInicial]],P),
     reverse(P,Plan).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                               despliega/1 despliega(<Plan>).
+
+%   Este predicado únicamente despliega los movimientos de un plan en forma de lista, requiere
+%   una búsqueda para funcionar. Se puede realizar con cualquiera de los tres algoritmos.
+
+%   Ejemplos de consultas:
+%   - busca_DFS([3,3,0,0,o],[0,0,3,3,d],P),despliega(P).
+%   - busca_BFS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
+%   - busca_IDS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+despliega(Plan) :-
+    format('~n~n~tÉxito, meta encontrada. ~72|~n'),
+    length(Plan,L), Pasos #= L - 1,
+    format('~tSolución con ~w pasos:~n~n',[Pasos]),
+    format('~tInicio en '),
+    Plan = [EstadoInicial|_],
+    imprimirEstado(EstadoInicial),
+    format('~n'),
+    once(imprimirPasos(1,Plan)).
+
+imprimirEstado([MO,CO,MD,CD,Barca]) :-
+    ((PosiciónBarca = 'Origen', Barca = o) ;
+    (PosiciónBarca = 'Destino', Barca = d)), 
+    format('((~w ~w) (~w ~w) ~w)~n',[MO,CO,MD,CD,PosiciónBarca]).
+
+imprimirPasos(Num,[E1,E2]) :-
+    format('~t~w) Moviendo ',[Num]),
+    imprimirMovimiento(E1,E2),
+    format(' se llega a '),
+    imprimirEstado(E2),
+    format('~n~n').
+
+imprimirPasos(Num,[E1,E2|Resto]) :-
+    format('~t~w) Moviendo ',[Num]),
+    imprimirMovimiento(E1,E2),
+    format(' se llega a '),
+    imprimirEstado(E2),
+    NumS #= Num + 1,
+    imprimirPasos(NumS,[E2|Resto]).
+
+imprimirMovimiento([MO1,CO1,_,_,_],[MO2,CO2,_,_,_]) :-
+    % Un misionero
+    (CO1 = CO2,
+    ((MO1 #= MO2 + 1) ; (MO1 #= MO2 - 1)),
+    format('           un misionero         '))
+    ;
+
+    % Dos misioneros
+    (CO1 = CO2,
+    ((MO1 #= MO2 + 2) ; (MO1 #= MO2 - 2)),
+    format('          dos misioneros        '))
+    ;
+
+    % Un misionero y un caníbal
+    (((MO1 #= MO2 + 1, CO1 #= CO2 + 1);
+    (MO1 #= MO2 - 1, CO1 #= CO2 - 1)),
+    format('    un misionero y un caníbal   '))
+    ;
+
+    % Un caníbal
+    (MO1 = MO2,
+    ((CO1 #= CO2 + 1) ; (CO1 #= CO2 - 1)),
+    format('           un caníbal           '))
+    ;
+
+    % Dos caníbales
+    (MO1 = MO2,
+    ((CO1 #= CO2 + 2) ; (CO1 #= CO2 - 2)),
+    format('          dos caníbales         ')).
