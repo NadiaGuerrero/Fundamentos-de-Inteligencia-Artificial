@@ -102,3 +102,17 @@ movimiento([MO1,CO1,MD1,CD1,L1],[MO2,CO2,MD2,CD2,L2]) :-
     (CO1 #= CO2 - 2, L1 = d, L2 = o)))
 
     ).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       sucesores/2 sucesores(<Frontera>,<Sucesores>).
+
+%   Este predicado encuentra todos los estados adyacentes al primer elemento de la <Frontera>, 
+%   y los guarda en la lista <Sucesores> siempre y cuando estos no hayan sido visitados antes.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+sucesores([Estado|Resto],Sucesores) :-
+    findall([S,Estado|Resto],
+            (movimiento(Estado,S), \+ member(S,[Estado|Resto])),
+            Sucesores).
