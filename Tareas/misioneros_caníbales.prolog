@@ -148,3 +148,25 @@ dfs([Candidato|Frontera],Ruta) :-
     sucesores(Candidato,Sucesores),
     append(Sucesores,Frontera,NuevaAgenda),
     dfs(NuevaAgenda,Ruta).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   busca_BFS/3 busca_BFS(<EstadoInicial>,<EstadoMeta>,<Plan>).
+
+%   Este predicado encuentra una ruta entre el estado inicial y el estado final utilizando la 
+%   estrategia de búsqueda BFS (Breath-First Search).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+busca_BFS(EstadoInicial,EstadoMeta,Plan) :-
+    retractall( edo_meta( _ ) ),
+    assert(edo_meta(EstadoMeta)),
+    bfs([[EstadoInicial]],P),
+    reverse(P,Plan).
+
+bfs([[EstadoMeta|T]|_],[EstadoMeta|T]) :- edo_meta(EstadoMeta).
+
+bfs([Candidato|Frontera],Ruta) :-
+    sucesores(Candidato,Sucesores),
+    append(Frontera,Sucesores,NuevaAgenda),
+    bfs(NuevaAgenda,Ruta).
