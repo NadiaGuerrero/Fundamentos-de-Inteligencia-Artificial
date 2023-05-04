@@ -53,3 +53,52 @@ edo_válido(Estado) :-
     CaníbalesOrigen + CaníbalesDestino #= Cantidad,
     ((MisionerosOrigen #>= CaníbalesOrigen, MisionerosOrigen #> 0) ; MisionerosOrigen #= 0),
     ((MisionerosDestino #>= CaníbalesDestino, MisionerosDestino #> 0) ; MisionerosDestino #= 0).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       movimiento/2    movimiento(<Estado1>,<Estado2>).
+
+%   Este predicado recibe un estado cualesquiera, lo valida y devuelve un estado válido  
+%   al que se pueda llegar con un solo movimiento. Se puede utilizar de forma no canónica 
+%   proporcionando dos variables o dos constantes. Para la forma canónica se requiere de 
+%   una variable <Estado1> y una constante <Estado2>, sin embargo el orden se puede invertir 
+%   sin afectar al resultado.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+movimiento([MO1,CO1,MD1,CD1,L1],[MO2,CO2,MD2,CD2,L2]) :-
+
+    edo_válido([MO1,CO1,MD1,CD1]),  % Se validan ambos estados para aprovechar las 
+    edo_válido([MO2,CO2,MD2,CD2]),  % restricciones en este predicado.
+
+    (
+
+    % Un misionero
+    (CO1 = CO2,
+    ((MO1 #= MO2 + 1, L1 = o, L2 = d) ;
+    (MO1 #= MO2 - 1, L1 = d, L2 = o)))
+    ;
+
+    % Dos misioneros
+    (CO1 = CO2,
+    ((MO1 #= MO2 + 2, L1 = o, L2 = d) ;
+    (MO1 #= MO2 - 2, L1 = d, L2 = o)))
+    ;
+
+    % Un misionero y un caníbal
+    ((MO1 #= MO2 + 1, CO1 #= CO2 + 1, L1 = o, L2 = d);
+    (MO1 #= MO2 - 1, CO1 #= CO2 - 1, L1 = d, L2 = o))
+    ;
+
+    % Un caníbal
+    (MO1 = MO2,
+    ((CO1 #= CO2 + 1, L1 = o, L2 = d) ;
+    (CO1 #= CO2 - 1, L1 = d, L2 = o)))
+    ;
+
+    % Dos caníbales
+    (MO1 = MO2,
+    ((CO1 #= CO2 + 2, L1 = o, L2 = d) ;
+    (CO1 #= CO2 - 2, L1 = d, L2 = o)))
+
+    ).
