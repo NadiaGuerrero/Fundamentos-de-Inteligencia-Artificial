@@ -116,3 +116,35 @@ sucesores([Estado|Resto],Sucesores) :-
     findall([S,Estado|Resto],
             (movimiento(Estado,S), \+ member(S,[Estado|Resto])),
             Sucesores).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                               edo_meta/1  edo_meta(<Estado>).
+
+%   Este predicado tiene como objetivo almacenar el estado meta de la búsqueda actual.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+- dynamic(edo_meta/1).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   busca_DFS/3 busca_DFS(<EstadoInicial>,<EstadoMeta>,<Plan>).
+
+%   Este predicado encuentra una ruta entre el estado inicial y el estado final utilizando la 
+%   estrategia de búsqueda DFS (Depth-First Search).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+busca_DFS(EstadoInicial,EstadoMeta,Plan) :-
+    retractall( edo_meta( _ ) ),
+    assert(edo_meta(EstadoMeta)),
+    dfs([[EstadoInicial]],P),
+    reverse(P,Plan).
+
+dfs([[EstadoMeta|T]|_],[EstadoMeta|T]) :- edo_meta(EstadoMeta).
+
+dfs([Candidato|Frontera],Ruta) :-
+    sucesores(Candidato,Sucesores),
+    append(Sucesores,Frontera,NuevaAgenda),
+    dfs(NuevaAgenda,Ruta).
