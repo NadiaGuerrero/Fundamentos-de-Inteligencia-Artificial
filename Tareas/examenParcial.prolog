@@ -271,8 +271,13 @@ imprimir_tramos(Posición,[E1,E2|Ruta],[Tiempo-Transborde|Tramos]) :-
     ((Transborde == no,
     format('~w) ~w a ~w, ~w minutos, sin transborde~n',[Posición,E1N,E2N,Tiempo]));
     
+<<<<<<< HEAD
     (Transborde \== no, convertir_átomo(Transborde,TransbordeN),
     format('~w) ~w a ~w, ~w minutos, transborde a ~w~n',[Posición,E1N,E2N,Tiempo,TransbordeN]))),
+=======
+    (Transborde \== no,
+    format('~w) ~w a ~w, ~w minutos, transborde a ~w~n',[Posición,E1N,E2N,Tiempo,Transborde]))),
+>>>>>>> a116dedf69af6fbdeb8bf5d9e99a6631e8aa14dd
     
     PosiciónSiguiente #= Posición + 1,
     once(imprimir_tramos(PosiciónSiguiente,[E2|Ruta],Tramos)).
