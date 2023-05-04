@@ -33,10 +33,23 @@
 %   Recomendaciones: 
 %   
 
-%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
-
-%   
-
-%   
+:- use_module( library(clpfd) ).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                              edo_válido/1  edo_válido(<Estado>).
+
+%   Este predicado valida que se tengan 3 caníbales y 3 misioneros en total y que no haya más
+%   caníbales que misioneros en ninguna de las dos orillas. Devuelve true cuando se cumplen
+%   ambas condiciones.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+edo_válido(Estado) :-
+    Estado = [MisionerosOrigen,CaníbalesOrigen,MisionerosDestino,CaníbalesDestino],
+    Cantidad = 3, % Se tienen <Cantidad> tanto de misioneros como de caníbales
+    Estado ins 0..Cantidad,
+    MisionerosOrigen + MisionerosDestino #= Cantidad,
+    CaníbalesOrigen + CaníbalesDestino #= Cantidad,
+    ((MisionerosOrigen #>= CaníbalesOrigen, MisionerosOrigen #> 0) ; MisionerosOrigen #= 0),
+    ((MisionerosDestino #>= CaníbalesDestino, MisionerosDestino #> 0) ; MisionerosDestino #= 0).
