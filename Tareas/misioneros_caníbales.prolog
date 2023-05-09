@@ -120,6 +120,10 @@ sucesores([Estado|Resto],Sucesores) :-
             (movimiento(Estado,S), \+ member(S,[Estado|Resto])),
             Sucesores).
 
+sucesor([Estado|Resto],[Sucesor,Estado|Resto]) :-
+    movimiento(Estado,Sucesor),
+    \+ member(Sucesor,[Estado|Resto]).
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                               edo_meta/1  edo_meta(<Estado>).
@@ -147,10 +151,17 @@ busca_DFS(EstadoInicial,EstadoMeta,Plan) :-
 
 dfs([[EstadoMeta|T]|_],[EstadoMeta|T]) :- edo_meta(EstadoMeta).
 
+%   Utilizando sucesores/2, que saca todos los sucesores al mismo tiempo en una lista
 dfs([Candidato|Frontera],Ruta) :-
     sucesores(Candidato,Sucesores),
     append(Sucesores,Frontera,NuevaAgenda),
     dfs(NuevaAgenda,Ruta).
+
+/* %   Utilizando sucesor/2 que los encuentra de forma individual
+dfs([Candidato|Frontera],Ruta) :-
+    sucesor(Candidato,Sucesor),
+    NuevaAgenda = [Sucesor|Frontera],
+    dfs(NuevaAgenda,Ruta). */
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -169,10 +180,17 @@ busca_BFS(EstadoInicial,EstadoMeta,Plan) :-
 
 bfs([[EstadoMeta|T]|_],[EstadoMeta|T]) :- edo_meta(EstadoMeta).
 
+% sucesores/2
 bfs([Candidato|Frontera],Ruta) :-
     sucesores(Candidato,Sucesores),
     append(Frontera,Sucesores,NuevaAgenda),
     bfs(NuevaAgenda,Ruta).
+
+/* % sucesor/2
+bfs([Candidato|Frontera],Ruta) :-
+    sucesor(Candidato,Sucesor),
+    NuevaAgenda = [Frontera|Sucesor],
+    bfs(NuevaAgenda,Ruta). */
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
