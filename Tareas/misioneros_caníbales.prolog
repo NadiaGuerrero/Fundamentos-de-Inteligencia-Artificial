@@ -209,9 +209,13 @@ busca_IDS(EstadoInicial,EstadoMeta,Plan) :-
 despliega(Plan) :-
     format('~n~n~tÉxito, meta encontrada. ~72|~n'),
     length(Plan,L), Pasos #= L - 1,
-    format('~tSolución con ~w pasos:~n~n',[Pasos]),
-    format('~tInicio en '),
+    format('~tSolución con ~w pasos entre los estados: ~n~t- ',[Pasos]), 
     Plan = [EstadoInicial|_],
+    append(_,[EstadoFinal],Plan),
+    imprimirEstado(EstadoInicial),
+    format('~t~t- '),
+    imprimirEstado(EstadoFinal),
+    format('~n~tInicio en '),
     imprimirEstado(EstadoInicial),
     format('~n'),
     once(imprimirPasos(1,Plan)).
