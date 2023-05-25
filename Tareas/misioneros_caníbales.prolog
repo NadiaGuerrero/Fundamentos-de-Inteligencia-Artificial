@@ -36,6 +36,10 @@
 %   - busca_BFS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
 %   - busca_IDS([3,3,0,0,o],[1,1,2,2,d],P),despliega(P).
 
+/* 
+cd("D:/ESCOM/IA/Fundamentos-de-Inteligencia-Artificial/Tareas").
+["misioneros_caníbales"].
+ */
 :- use_module( library(clpfd) ).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
@@ -78,31 +82,22 @@ movimiento([MO1,CO1,MD1,CD1,L1],[MO2,CO2,MD2,CD2,L2]) :-
 
     % Un misionero
     (CO1 = CO2,
-    ((MO1 #= MO2 + 1, L1 = o, L2 = d) ;
-    (MO1 #= MO2 - 1, L1 = d, L2 = o)))
-    ;
+    ((MO1 #= MO2 + 1, L1 = o, L2 = d) ; (MO1 #= MO2 - 1, L1 = d, L2 = o))) ;
 
     % Dos misioneros
     (CO1 = CO2,
-    ((MO1 #= MO2 + 2, L1 = o, L2 = d) ;
-    (MO1 #= MO2 - 2, L1 = d, L2 = o)))
-    ;
+    ((MO1 #= MO2 + 2, L1 = o, L2 = d) ; (MO1 #= MO2 - 2, L1 = d, L2 = o))) ;
 
     % Un misionero y un caníbal
-    ((MO1 #= MO2 + 1, CO1 #= CO2 + 1, L1 = o, L2 = d);
-    (MO1 #= MO2 - 1, CO1 #= CO2 - 1, L1 = d, L2 = o))
-    ;
+    ((MO1 #= MO2 + 1, CO1 #= CO2 + 1, L1 = o, L2 = d); (MO1 #= MO2 - 1, CO1 #= CO2 - 1, L1 = d, L2 = o)) ;
 
     % Un caníbal
     (MO1 = MO2,
-    ((CO1 #= CO2 + 1, L1 = o, L2 = d) ;
-    (CO1 #= CO2 - 1, L1 = d, L2 = o)))
-    ;
+    ((CO1 #= CO2 + 1, L1 = o, L2 = d) ; (CO1 #= CO2 - 1, L1 = d, L2 = o))) ;
 
     % Dos caníbales
     (MO1 = MO2,
-    ((CO1 #= CO2 + 2, L1 = o, L2 = d) ;
-    (CO1 #= CO2 - 2, L1 = d, L2 = o)))
+    ((CO1 #= CO2 + 2, L1 = o, L2 = d) ; (CO1 #= CO2 - 2, L1 = d, L2 = o)))
 
     ).
 
@@ -157,7 +152,7 @@ dfs([Candidato|Frontera],Ruta) :-
     append(Sucesores,Frontera,NuevaAgenda),
     dfs(NuevaAgenda,Ruta).
 
-/* %   Utilizando sucesor/2 que los encuentra de forma individual
+/* %   Utilizando sucesor/2 que los encuentra de forma individual y deja puntos de backtracking
 dfs([Candidato|Frontera],Ruta) :-
     sucesor(Candidato,Sucesor),
     NuevaAgenda = [Sucesor|Frontera],
@@ -186,7 +181,7 @@ bfs([Candidato|Frontera],Ruta) :-
     append(Frontera,Sucesores,NuevaAgenda),
     bfs(NuevaAgenda,Ruta).
 
-/* % sucesor/2
+/* % sucesor/2 Esta cláusula aprovecha los puntos de backtracking para revisar todas las rutas
 bfs([Candidato|Frontera],Ruta) :-
     sucesor(Candidato,Sucesor),
     NuevaAgenda = [Frontera|Sucesor],
@@ -202,13 +197,79 @@ bfs([Candidato|Frontera],Ruta) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
+%   Este primer intento utiliza el "truco" visto en clase, aprovecha el predicado length/2
+%   para fijar un límite a la longitud del <Plan>
+
 busca_IDS(EstadoInicial,EstadoMeta,Plan) :-
     retractall( edo_meta( _ ) ),
     assert(edo_meta(EstadoMeta)),
-    dfs([[EstadoInicial]],_),   % Repetir esta instrucción con variable anónima permite que el 
-    length(P,_),                % predicado falle si es que no existen rutas.
+    dfs([[EstadoInicial]],_),       % Repetir esta instrucción con variable anónima permite  
+    length(P,_),                    % que el predicado falle si es que no existen rutas.
     dfs([[EstadoInicial]],P),
     reverse(P,Plan).
+
+%   Encuentra las rutas de forma ascendente utilizando el enfoque de Bratko, funciona pero
+%   se sigue ciclando una vez que encuentra todas las rutas posibles. 
+
+busca_IDS(EstadoInicial,EstadoMeta,Plan) :-
+    retractall( edo_meta( _ ) ),
+    assert(edo_meta(EstadoMeta)),
+    ids(EstadoInicial,EstadoMeta,P),
+    reverse(P,Plan).
+
+ids(Estado,Estado,[Estado]).
+
+ids(EstadoInicial,EstadoFinal,[EstadoFinal|Plan]) :-
+    ids(EstadoInicial,PenúltimoEstado,Plan),
+    movimiento(PenúltimoEstado,EstadoFinal),
+    \+ member(EstadoFinal,Plan).
+
+%   IDS Bratko
+%   Este es el código tal cual viene en el libro, se utilizó a manera de referencia
+
+s(a, b).
+s(a, c).
+s(b, d).
+s(b, e).
+s(d, h).
+s(d, i).
+s(e, j).
+s(e, k).
+s(c, f).
+s(c, g).
+s(f, l).
+s(f, m).
+s(g, n).
+s(g, o).
+
+goal(n).
+
+depth_first_iterative_deepening(Node, Solution):-
+	path(Node, GoalNode,Solution),
+	goal(GoalNode).
+
+path(Node, Node, [Node]).
+
+path(FirstNode, LastNode, [LastNode|Path]) :- 
+    path(FirstNode, OneButLast, Path),
+    s(OneButLast, LastNode),
+    not(member(LastNode, Path)).
+
+% Estas cláusulas devuelven la ruta en orden pero se sigue ciclando
+
+path(FirstNode, LastNode, [FirstNode|Path]) :- 
+    path(SecondNode, LastNode, Path),
+    s(FirstNode, SecondNode),
+    not(member(FirstNode, Path)).
+
+%   Esta versión no se cicla pero entrega las cláusulas en orden descendente; primero las de 
+%   mayor tamaño y luego las más pequeñas, es como un IDS pero al revés y al igual que el anterior, 
+%   entrega la ruta en orden, por lo que ya no es necesario invertirla.
+
+path(FirstNode, LastNode, [FirstNode|Path]) :- 
+    s(FirstNode, SecondNode),    
+    path(SecondNode, LastNode, Path),
+    not(member(FirstNode, Path)).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
