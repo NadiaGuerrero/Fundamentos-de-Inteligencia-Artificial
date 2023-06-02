@@ -62,20 +62,6 @@ imprimirTablero(Tablero) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                       estado/2  estado(<Tablero>,<JugadorEnTurno>).
-
-%   Esta es la representación de los estados del juego, verdadero cuando el tablero es una 
-%   lista de 4 listas con 4 elementos cada una y el jugador en turno es un número recuperado
-%   con el predicado símbolo/2, ya sea 1 o 2.
-
-%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
-
-estado(Tablero,JugadorEnTurno) :-
-    Tablero = [[_,_,_,_],[_,_,_,_],[_,_,_,_],[_,_,_,_]],
-    símbolo(JugadorEnTurno,_).
-
-%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
-
 %                              siguiente_turno/1  siguiente_turno(<>).
 
 %   Este es un predicado auxiliar que registra la secuencia de turnos intercalados del juego.
@@ -150,3 +136,18 @@ empate(Tablero) :-
     maplist(member(Jugador2),Tablero),
 
     \+ victoria(Tablero,_).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                    estadoActual/2  estadoActual(<Tablero>,<JugadorEnTurno>).
+
+%   Esta es la representación de los estados del juego, verdadero cuando el tablero es una 
+%   lista de 4 listas con 4 elementos cada una y el jugador en turno es un número recuperado
+%   con el predicado símbolo/2, ya sea 1 o 2.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+estadoActual(Tablero,JugadorEnTurno) :-
+    Tablero = [[_,_,_,_],[_,_,_,_],[_,_,_,_],[_,_,_,_]],
+    símbolo(JugadorEnTurno,_),
+    JugadorEnTurno \= 0.
