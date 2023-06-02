@@ -16,9 +16,9 @@
 
 %                       símbolo/2  símbolo(<Identificador>,<Símbolo>).
 
-%   Este predicado auxiliar sirve para almacenar y recuperar los símbolos válidos dentro del 
-%   juego, además de asociarlos a un número. El 1 y 2 son los jugadores y el 0 es el símbolo
-%   que estará en las casillas desocupadas.
+%   Es un predicado auxiliar que sirve para almacenar y recuperar los símbolos válidos dentro  
+%   del juego, además de asociarlos a un número. El 1 y 2 son los jugadores, mientras que el 
+%   0 es el símbolo que estará en las casillas desocupadas.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -30,7 +30,7 @@ símbolo(2, o).
 
 %                           tableroVacío/1  tableroVacío(<Tablero>).
 
-%   Este predicado genera un tablero en el que todas las casillas están desocupadas.
+%   Genera un tablero en el que todas las casillas están desocupadas.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -96,10 +96,10 @@ jugada((Tablero,Jugador),(NuevoTablero,NuevoJugador)) :-
 
 %                           victoria/2  victoria(<Tablero>,<Ganador>).
 
-%   Este predicado valida que exista una fila, columna o diagonal de símbolos iguales y 
-%   devuelve el número del jugador al que corresponde el símbolo ganador. Este es un predicado
-%   no determinístico y puede detectar más de una victoria (incluso de jugadores distintos) en
-%   caso de que se cumpla la condición mas de una vez.
+%   Valida que exista una fila, columna o diagonal de símbolos iguales y devuelve el número 
+%   del jugador al que corresponde el símbolo ganador. Es no determinístico y puede detectar 
+%   más de una victoria (incluso de jugadores distintos) encaso de que se cumpla la condición 
+%   mas de una vez.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -120,9 +120,9 @@ victoria(Tablero,Ganador) :-
 
 %                                   empate/1  empate(<Tablero>).
 
-%   Este predicado valida que exista un empate en el tablero que se le proporciona. Para que
-%   exista un empate, es necesario que en TODAS las filas, columnas y diagonales haya símbolos
-%   de ambos jugadores, lo que imposibilita que cualquiera de los dos gane.
+%   Valida que exista un empate en el tablero que se le proporciona. Para ello es necesario 
+%   que en TODAS las filas, columnas y diagonales haya símbolos de ambos jugadores, lo que 
+%   imposibilita que cualquiera de los dos gane.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -136,4 +136,4 @@ empate(Tablero) :-
     maplist(member(Jugador1),Tablero),
     maplist(member(Jugador2),Tablero),
 
-    \+victoria(Tablero,_).
+    \+ victoria(Tablero,_).
