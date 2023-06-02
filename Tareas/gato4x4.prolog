@@ -141,7 +141,6 @@ victoria(Tablero,Ganador) :-
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 empate(Tablero) :-
-    Tablero = [A,B,C,D],
 
     símbolo(1,Jugador1),
     símbolo(2,Jugador2),
