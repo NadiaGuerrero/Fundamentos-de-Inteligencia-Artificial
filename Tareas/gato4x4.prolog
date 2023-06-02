@@ -116,4 +116,24 @@ victoria(Tablero,Ganador) :-
     símbolo(Ganador,S), 
     (Ganador = 1 ; Ganador = 2).
 
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
+%                                   empate/1  empate(<Tablero>).
+
+%   Este predicado valida que exista un empate en el tablero que se le proporciona. Para que
+%   exista un empate, es necesario que en TODAS las filas, columnas y diagonales haya símbolos
+%   de ambos jugadores, lo que imposibilita que cualquiera de los dos gane.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+empate(Tablero) :-
+    Tablero = [A,B,C,D],
+
+    símbolo(1,Jugador1),
+    símbolo(2,Jugador2),
+
+    % Deben existir ambos símbolos en todas las filas
+    maplist(member(Jugador1),Tablero),
+    maplist(member(Jugador2),Tablero),
+
+    \+victoria(Tablero,_).
