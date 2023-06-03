@@ -17,14 +17,18 @@
 %                       símbolo/2  símbolo(<Identificador>,<Símbolo>).
 
 %   Es un predicado auxiliar que sirve para almacenar y recuperar los símbolos válidos dentro  
-%   del juego, además de asociarlos a un número. El 1 y 2 son los jugadores, mientras que el 
-%   0 es el símbolo que estará en las casillas desocupadas.
+%   del juego, además de asociarlos a un número.
+
+%                         símboloVacío/2  símboloVacío(<Símbolo>).
+
+%   Indica qué símbolo se va a utilizar para representar que una casilla está vacía.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-símbolo(0, -). % Indica que la casilla está desocupada
 símbolo(1, x).
 símbolo(2, o).
+
+símboloVacío(-). % Indica que la casilla está desocupada
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -35,7 +39,7 @@ símbolo(2, o).
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 tableroVacío(Tablero) :-
-    símbolo(0,Símbolo),
+    símboloVacío(Símbolo),
     Renglón = [Símbolo, Símbolo, Símbolo, Símbolo],
     Tablero = [Renglón, Renglón, Renglón, Renglón].
 
@@ -85,7 +89,7 @@ siguiente_turno(2, 1).
 jugada((Tablero,Jugador),(NuevoTablero,NuevoJugador)) :-
     siguiente_turno(Jugador,NuevoJugador),
     símbolo(Jugador,Símbolo),
-    símbolo(0,Vacío),
+    símboloVacío(Vacío),
     
     nth1(NumRenglón,Tablero,Renglón,RestoTablero),
     nth1(NumRenglón,NuevoTablero,NuevoRenglón,RestoTablero),
@@ -113,8 +117,7 @@ victoria(Tablero,Ganador) :-
     (nth1(4,A,S), nth1(3,B,S), nth1(2,C,S), nth1(1,D,S))  % Diagonal de derecha a izquierda
     ),
     
-    símbolo(Ganador,S), 
-    (Ganador = 1 ; Ganador = 2).
+    símbolo(Ganador,S).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -149,5 +152,4 @@ empate(Tablero) :-
 
 estadoActual(Tablero,JugadorEnTurno) :-
     Tablero = [[_,_,_,_],[_,_,_,_],[_,_,_,_],[_,_,_,_]],
-    símbolo(JugadorEnTurno,_),
-    JugadorEnTurno \= 0.
+    símbolo(JugadorEnTurno,_).
