@@ -155,3 +155,57 @@ empate(Tablero) :-
 estadoActual(Tablero,JugadorEnTurno) :-
     Tablero = [[_,_,_,_],[_,_,_,_],[_,_,_,_],[_,_,_,_]],
     símbolo(JugadorEnTurno,_).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       ventaja/3  ventaja(<Tablero>,<Jugador>,<Ventaja>).
+
+%   <Ventaja> es la cantidad de líneas verticales, horizontales y diagonales en las que el 
+%   jugador tiene oportunidad de ganar y su oponente no (las líneas vacías no se cuentan).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+ventaja(Tablero,Jugador,Ventaja) :-
+
+    Tablero =   [[I1,_,_,D4],
+                [_,I2,D3,_],
+                [_,D2,I3,_],
+                [D1,_,_,I4]],
+
+    DiagonalI = [I1,I2,I3,I4],
+    DiagonalD = [D1,D2,D3,D4],
+    
+    siguiente_turno(Jugador,Oponente),
+    símbolo(Jugador,Símbolo),
+    símbolo(Oponente,SímboloOponente),
+
+    % Esta consulta encuentra los renglones en los que sólo hay símbolos del jugador en turno
+    findall(R,(member(R,Tablero),once(member(Símbolo,R)),(\+member(SímboloOponente,R))),Renglones),
+    length(Renglones,CantidadRenglones),
+
+    transpose(Tablero,TableroTranspuesto),
+    findall(C,(member(C,TableroTranspuesto),once(member(Símbolo,C)),(\+member(SímboloOponente,C))),Columnas),
+    length(Columnas,CantidadColumnas),
+
+    findall(D,(member(D,[DiagonalI,DiagonalD]),once(member(Símbolo,D)),(\+member(SímboloOponente,D))),Diagonales),
+    length(Diagonales,CantidadDiagonales),
+
+    Ventaja #= CantidadRenglones + CantidadColumnas + CantidadDiagonales.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   aptitud/3  aptitud(<Tablero>,<JugadorEnTurno>,<Aptitud>).
+
+%   <Aptitud> es la diferencia entre la ventaja del jugador en turno y el jugador siguiente.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+aptitud(Tablero,JugadorEnTurno,Aptitud) :-
+
+    siguiente_turno(JugadorEnTurno,JugadorSiguiente),
+
+    ventaja(Tablero,JugadorEnTurno,VentajaJugador),
+    ventaja(Tablero,JugadorSiguiente,VentajaOponente),
+    
+    Aptitud #= VentajaJugador - VentajaOponente.
+    
