@@ -12,6 +12,8 @@
 %   Recomendaciones:
 %   
 
+:- use_module(library(clpfd)).
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                       símbolo/2  símbolo(<Identificador>,<Símbolo>).
