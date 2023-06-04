@@ -208,4 +208,43 @@ aptitud(Tablero,JugadorEnTurno,Aptitud) :-
     ventaja(Tablero,JugadorSiguiente,VentajaOponente),
     
     Aptitud #= VentajaJugador - VentajaOponente.
-    
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                           horizonte/1  horizonte(<Horizonte>).
+
+%   Determina la profundidad de las búsquedas que realizará el agente jugador para decidir sus
+%   jugadas.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+:- dynamic(horizonte/1).
+horizonte(5).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%   negamax/1  negamax(<>).
+
+%   Es el predicado encargado de realiza la búsqueda y seleccionar la mejor jugada, es una 
+%   modificación del algoritmo minimax e incluye podas a-b para reducir el efecto horizonte.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+negamax(Tablero,JugadorEnTurno,ProfundidadActual,MejorMovimiento) :-
+    (victoria(Tablero,_);
+    empate(Tablero);
+    (horizonte(Horizonte), ProfundidadActual >= Horizonte))
+
+   ->   MejorMovimiento = Tablero
+   
+   ;    (Alfa = -10,
+        jugada((Tablero,JugadorEnTurno),(NuevoTablero,NuevoJugador)),
+        NuevaProfundidad #= ProfundidadActual + 1,
+        negamax(NuevoTablero,NuevoJugador,NuevaProfundidad,NuevoMovimiento),
+        aptitud(NuevoMovimiento,NuevoJugador,Aptitud),
+        Valor #= Aptitud * -1,
+
+        ((Valor #> Alfa, MejorMovimiento = NuevoMovimiento);
+        (Valor #=< Alfa, MejorMovimiento = Tablero))
+
+        ).
