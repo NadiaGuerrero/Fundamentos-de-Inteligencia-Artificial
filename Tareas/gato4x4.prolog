@@ -57,14 +57,14 @@ tableroVacío(Tablero) :-
 imprimirTablero(Tablero) :-
     Tablero = [A,B,C,D], % Cada letra es una fila del tablero
 
-    format('~n       1     2     3     4~n~n'),
-    format('A   |  ~w  |  ~w  |  ~w  |  ~w  |~n',A),
-    format('    +-----+-----+-----+-----+~n'),
-    format('B   |  ~w  |  ~w  |  ~w  |  ~w  |~n',B),
-    format('    +-----+-----+-----+-----+~n'),
-    format('C   |  ~w  |  ~w  |  ~w  |  ~w  |~n',C),
-    format('    +-----+-----+-----+-----+~n'),
-    format('D   |  ~w  |  ~w  |  ~w  |  ~w  |~n~n',D).
+    format('~n           1     2     3     4~n~n'),
+    format('    A   |  ~w  |  ~w  |  ~w  |  ~w  |~n',A),
+    format('        +-----+-----+-----+-----+~n'),
+    format('    B   |  ~w  |  ~w  |  ~w  |  ~w  |~n',B),
+    format('        +-----+-----+-----+-----+~n'),
+    format('    C   |  ~w  |  ~w  |  ~w  |  ~w  |~n',C),
+    format('        +-----+-----+-----+-----+~n'),
+    format('    D   |  ~w  |  ~w  |  ~w  |  ~w  |~n~n',D).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -140,21 +140,30 @@ empate(Tablero) :-
     maplist(member(Jugador1),Tablero),
     maplist(member(Jugador2),Tablero),
 
-    \+ victoria(Tablero,_).
+    transpose(Tablero,TableroTranspuesto),
+    maplist(member(Jugador1),TableroTranspuesto),
+    maplist(member(Jugador2),TableroTranspuesto),
+
+    Tablero =   [[I1,_,_,D4],
+                [_,I2,D3,_],
+                [_,D2,I3,_],
+                [D1,_,_,I4]],
+
+    DiagonalI = [I1,I2,I3,I4],
+    DiagonalD = [D1,D2,D3,D4],
+
+    member(Jugador1,DiagonalI), member(Jugador2,DiagonalI),
+    member(Jugador1,DiagonalD), member(Jugador2,DiagonalD).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                    estadoActual/2  estadoActual(<Tablero>,<JugadorEnTurno>).
 
-%   Esta es la representación de los estados del juego, verdadero cuando el tablero es una 
-%   lista de 4 listas con 4 elementos cada una y el jugador en turno es un número recuperado
-%   con el predicado símbolo/2, ya sea 1 o 2.
+%   Esta es la representación de los estados del juego, contiene el tablero y jugador en turno.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-estadoActual(Tablero,JugadorEnTurno) :-
-    Tablero = [[_,_,_,_],[_,_,_,_],[_,_,_,_],[_,_,_,_]],
-    símbolo(JugadorEnTurno,_).
+:- dynamic(estadoActual/2).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -219,7 +228,6 @@ aptitud(Tablero,JugadorEnTurno,Aptitud) :-
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 :- dynamic(horizonte/1).
-horizonte(5).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -231,8 +239,8 @@ horizonte(5).
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 negamax(Tablero,JugadorEnTurno,ProfundidadActual,MejorMovimiento) :-
-    (victoria(Tablero,_);
-    empate(Tablero);
+    (/* victoria(Tablero,_);
+    empate(Tablero); */
     (horizonte(Horizonte), ProfundidadActual >= Horizonte))
 
    ->   MejorMovimiento = Tablero
@@ -241,10 +249,143 @@ negamax(Tablero,JugadorEnTurno,ProfundidadActual,MejorMovimiento) :-
         jugada((Tablero,JugadorEnTurno),(NuevoTablero,NuevoJugador)),
         NuevaProfundidad #= ProfundidadActual + 1,
         negamax(NuevoTablero,NuevoJugador,NuevaProfundidad,NuevoMovimiento),
-        aptitud(NuevoMovimiento,NuevoJugador,Aptitud),
+        aptitud(NuevoMovimiento,JugadorEnTurno,Aptitud),
         Valor #= Aptitud * -1,
 
-        ((Valor #> Alfa, MejorMovimiento = NuevoMovimiento);
-        (Valor #=< Alfa, MejorMovimiento = Tablero))
+        ((Valor #> Alfa, MejorMovimiento = NuevoMovimiento)/* ;
+        (Valor #=< Alfa, MejorMovimiento = Tablero) */)
 
         ).
+
+
+
+
+minimax(Profundidad,Siguiente_jugada,Evaluación) :-
+    estadoActual(Tablero,Jugador),
+    horizonte(Horizonte),
+    Profundidad < Horizonte,
+    N is Profundidad + 1,
+    listar_jugadas((Tablero,Jugador),Jugadas),
+    mejor_jugada(Jugadas,N,Siguiente_jugada,Evaluación),!.
+
+minimax(_,_,Evaluación) :-
+    estadoActual(Tablero,Jugador),
+    aptitud(Tablero,Jugador,Evaluación).
+
+mejor_jugada([Jugada],Profundidad,Jugada,Evaluación) :-
+    minimax(Profundidad,_,Evaluación),!.
+
+mejor_jugada([Jugada_1|Jugadas],Profundidad,Mejor_jugada,Mejor_evaluación) :-
+    minimax(Profundidad,_,Evaluación_1),
+    mejor_jugada(Jugadas,Profundidad,Jugada_2,Evaluación_2),
+    mejor_entre(Jugada_1,Evaluación_1,Jugada_2,Evaluación_2,Mejor_jugada,Mejor_evaluación).
+
+mejor_entre(Jugada_1,Evaluación_1,_,Evaluación_2,Jugada_1,Evaluación_1) :-
+    Jugada_1 = (_,Jugador),
+    (min(Jugador),
+    Evaluación_1 >= Evaluación_2, ! ;
+    max(Jugador),
+    Evaluación_1 =< Evaluación_2, !).
+
+mejor_entre(_,_,Jugada,Evaluación,Jugada,Evaluación).
+
+listar_jugadas(Estado,Jugadas) :-
+    findall((NuevoTablero,NuevoJugador),jugada(Estado,(NuevoTablero,NuevoJugador)),Jugadas).
+
+
+
+
+
+
+inicia_juego(Horizonte) :-
+    retractall(horizonte(_)),
+    assert(horizonte(Horizonte)),
+
+    retractall(estadoActual(_,_)),
+    tableroVacío(TableroVacío),
+    assert(estadoActual(TableroVacío,1)),
+
+    símbolo(1,SímboloHumano),
+    símbolo(2,SímboloAgente),
+    
+    format('~n~n~tBienvenido al gato 4X4 ~60|~n'),
+    format('
+    A continuación algunos puntos importantes:
+
+    - Para tirar deberás utilizar el predicado tiro(<Renglón>,<Columna>), los renglones 
+    se indican con letras minúsculas y las columnas con números.
+    - El jugador 1 es quien inicia todos los juegos.
+    - Tú eres el jugador ~w y tu símbolo es ~w.
+    - Yo soy el jugador ~w y mi símbolo es ~w.
+    - Después de cada turno te mostraré el tablero.
+    - Cuando termine el juego imprimiré el tablero e indicaré el resultado final.
+
+    Buena suerte y que gane el mejor :D
+    ',[1,SímboloHumano,2,SímboloAgente]),
+    
+    estadoActual(Tablero,1),
+    imprimirTablero(Tablero).
+
+tiro(LetraRenglón,Columna) :-
+    renglón(LetraRenglón,Renglón),
+    estadoActual(Tablero,JugadorEnTurno),
+    símbolo(JugadorEnTurno,Símbolo),
+    
+    nth1(Renglón,Tablero,R,RestoTablero),
+    nth1(Columna,R,_,RestoRenglón),
+    
+    nth1(Renglón,NuevoTablero,NR,RestoTablero),
+    nth1(Columna,NR,Símbolo,RestoRenglón),
+    
+    jugada((Tablero,JugadorEnTurno),(NuevoTablero,NuevoJugador)),
+    retractall(estadoActual(_,_)),
+    assert(estadoActual(NuevoTablero,NuevoJugador)),
+    
+    ((victoria(NuevoTablero,_); empate(NuevoTablero))
+     -> once(anunciarResultado(NuevoTablero))
+     ;  tiroAgente()).
+
+tiroAgente() :-
+    estadoActual(Tablero,JugadorEnTurno),
+    agente(JugadorEnTurno),
+
+    negamax(Tablero,JugadorEnTurno,0,NuevoTablero),
+
+    jugada((Tablero,JugadorEnTurno),(NuevoTablero,NuevoJugador)),
+    retractall(estadoActual(_,_)),
+    assert(estadoActual(NuevoTablero,NuevoJugador)),
+    
+    ((victoria(NuevoTablero,_); empate(NuevoTablero))
+     -> once(anunciarResultado(NuevoTablero))
+     ;  tiroAgente()).
+
+anunciarResultado(Tablero) :-
+    victoria(Tablero,Ganador),
+
+    ((humano(Ganador),
+    format('
+    Felicidades, humano
+    Ganaste la partida C:~n~n'));
+    
+    (agente(Ganador),
+    format('
+    Lo siento mucho, yo gané
+    Más suerte para la próxima UuU~n~n'))),
+
+    imprimirTablero(Tablero).
+
+anunciarResultado(Tablero) :-
+    once(empate(Tablero)),
+
+    format('
+    Ni tú, ni yo, esto es un empate~n~n'),
+
+    imprimirTablero(Tablero).
+
+    renglón(a,1).
+    renglón(b,2).
+    renglón(c,3).
+    renglón(d,4).
+
+humano(1).
+agente(2).
