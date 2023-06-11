@@ -232,3 +232,13 @@ tableroInicial(Tablero) :-
                 [0,0,0],    % Base Jugador 1
                 [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]],  % Casillas Jugador 2
                 [0,0,0]].   % Base Jugador 2
+
+aumentarFicha(Color,Casilla,NuevaCasilla) :-
+    ((Color = a, Posición = 1);
+    (Color = v, Posición = 2);
+    (Color = r, Posición = 3)),
+
+    nth1(Posición,Casilla,Cantidad,Resto),
+    nth1(Posición,NuevaCasilla,NuevaCantidad,Resto),
+
+    NuevaCantidad #= Cantidad + 1.
