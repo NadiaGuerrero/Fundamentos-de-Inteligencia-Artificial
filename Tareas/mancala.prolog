@@ -240,6 +240,16 @@ tableroInicial(Tablero) :-
                 [1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],  % Casillas Jugador 2
                 [0,0,0]].   % Base Jugador 2
 
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                aumentarFicha/3  aumentarFicha(<Color>,<Casilla>,<NuevaCasilla>).
+
+%   Agrega una ficha del color indicado a la casilla seleccionada. Los posibles colores son:
+%   amarillo (a), verde (v) y rojo (r), aunque también se puede enviar una x para indicar
+%   que esa casilla se debe omitir.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
 aumentarFicha(x,Casilla,Casilla).
 
 aumentarFicha(Color,Casilla,NuevaCasilla) :-
@@ -253,8 +263,30 @@ aumentarFicha(Color,Casilla,NuevaCasilla) :-
     nth1(Posición,NuevaCasilla,NuevaCantidad,Resto),
 
     NuevaCantidad #= Cantidad + 1.
+    
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%       modificarTablero/1  modificarTablero(<Casilla>,<Jugada>,<Tablero>,<NuevoTablero>).
+
+%   Este predicado auxiliar recibe una lista de colores, <Jugada> y reparte esas fichas en 
+%   las casillas posteriores a <Casilla>.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
+    % Permite hacer jugadas con casillas que contengan más de 12 fichas
+    TamañoJugada #> 13,
+    length(Jugada,TamañoJugada),
+
+    TamañoExtra #= TamañoJugada - 13,
+    length(Extra,TamañoExtra),
+    append(NuevaJugada,Extra,Jugada),
+
+    modificarTablero(Casilla,Extra,Tablero,NT),
+    modificarTablero(Casilla,NuevaJugada,NT,NuevoTablero).
 
 modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
+    TamañoJugada #< 14,
+
     % Agrega x para hacer que la lista de jugadas coincida con el tamaño 
     % del tablero para poder emplear maplist/4
     length(Tablero,TamañoTablero),
@@ -276,3 +308,55 @@ modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
     length(T4,Casilla),
     append(T3,T4,Resultado),
     append(T4,T3,NuevoTablero).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%       jugada/5  jugada(<JugadorEnTurno>,<Casilla>,<Jugada>,<Tablero>,<NuevoTablero>).
+
+%   Este predicado es el que refleja las jugadas dentro del tablero, requiere del número del
+%   jugador en turno, la casilla de la que se repartirán las fichas y una jugada, que es una 
+%   lista que contene el orden en que se repartirán las fichas.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+jugada(JugadorEnTurno,Casilla,Jugada,Tablero,NuevoTablero) :-
+    Casilla in 1..6,
+
+    Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
+
+    ((JugadorEnTurno = 1, T1 = [C1,C2,C3,C4,C5,C6,BaseJ1,C7,C8,C9,C10,C11,C12]) ;
+    (JugadorEnTurno = 2, T1 = [C7,C8,C9,C10,C11,C12,BaseJ2,C1,C2,C3,C4,C5,C6])),
+
+    nth1(Casilla,T1,[Amarillas,Verdes,Rojas]),
+    contarFichas(Jugada,a,Amarillas), 
+    contarFichas(Jugada,v,Verdes),
+    contarFichas(Jugada,r,Rojas),
+    CantidadFichas #= Amarillas + Verdes + Rojas,
+    length(Jugada,CantidadFichas),
+
+    nth1(Casilla,T1,_,Resto),
+    nth1(Casilla,T,[0,0,0],Resto),
+
+    modificarTablero(Casilla,Jugada,T,NT),
+    
+    ((JugadorEnTurno = 1, append(NT,[BaseJ2],NuevoTablero)) ;
+    (JugadorEnTurno = 2, NT = [NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2,NC1,NC2,NC3,NC4,NC5,NC6],
+    NuevoTablero = [NC1,NC2,NC3,NC4,NC5,NC6,BaseJ1,NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2])).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                  contarFichas/3  contarFichas(<Lista>,<Elemento>,<Cantidad>).
+
+%   Este predicado auxiliar cuenta la cantidad de veces que aparece un elemento dentro de una
+%   lista.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+contarFichas([],_,0).
+contarFichas([X|Resto],X,Y) :-
+    contarFichas(Resto,X,Z),
+    Y is 1+Z.
+
+contarFichas([Otro|Resto],X,Z):- 
+    Otro \= X,
+    contarFichas(Resto,X,Z).
