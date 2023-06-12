@@ -233,7 +233,11 @@ tableroInicial(Tablero) :-
                 [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]],  % Casillas Jugador 2
                 [0,0,0]].   % Base Jugador 2
 
+aumentarFicha(x,Casilla,Casilla).
+
 aumentarFicha(Color,Casilla,NuevaCasilla) :-
+    Color \= x,
+
     ((Color = a, Posición = 1);
     (Color = v, Posición = 2);
     (Color = r, Posición = 3)),
@@ -242,3 +246,26 @@ aumentarFicha(Color,Casilla,NuevaCasilla) :-
     nth1(Posición,NuevaCasilla,NuevaCantidad,Resto),
 
     NuevaCantidad #= Cantidad + 1.
+
+ modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
+    % Agrega x para hacer que la lista de jugadas coincida con el tamaño 
+    % del tablero para poder emplear maplist/4
+    length(Tablero,TamañoTablero),
+    length(Jugada,TamañoJugada),
+    TamañoRelleno #= TamañoTablero - TamañoJugada,
+    length(Relleno, TamañoRelleno),
+    maplist(=(x),Relleno),
+    append(Jugada,Relleno,JugadaCompleta),
+
+    % Divide el tablero en dos secciones y las intercambia de lugar para
+    % que las casillas que reciben fichas queden al principio del tablero
+    length(T1,Casilla),    
+    append(T1,T2,Tablero),
+    append(T2,T1,TableroReordenado),
+
+    maplist(aumentarFicha,JugadaCompleta,TableroReordenado,Resultado),
+
+    % Regresa el tablero (ya modificado) a su orden original
+    length(T4,Casilla),
+    append(T3,T4,Resultado),
+    append(T4,T3,NuevoTablero).
