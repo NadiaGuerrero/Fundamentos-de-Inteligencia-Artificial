@@ -254,7 +254,7 @@ aumentarFicha(Color,Casilla,NuevaCasilla) :-
 
     NuevaCantidad #= Cantidad + 1.
 
- modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
+modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
     % Agrega x para hacer que la lista de jugadas coincida con el tamaño 
     % del tablero para poder emplear maplist/4
     length(Tablero,TamañoTablero),
