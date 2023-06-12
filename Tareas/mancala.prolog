@@ -135,38 +135,40 @@ imprimeRenglónCasilla(Jugador,Fichas,Resto) :-
     imprimeBorde(Jugador,'| ').
 
 imprimeRenglónTablero(1,Tablero,Resto) :-
-    Tablero = [CasillasJ1,BaseJ1,CasillasJ2,BaseJ2],
-    CasillasJ1 = [C1,C2,C3,C4,C5,C6],
+    Tablero =   [C1,C2,C3,C4,C5,C6,BaseJ1,
+                C7,C8,C9,C10,C11,C12,BaseJ2],
 
     imprimeSangría(),
     imprimeRenglónCasilla(1,BaseJ1,RestoBaseJ1),
-    imprimeRenglónCasilla(1,C1,RC1),
-    imprimeRenglónCasilla(1,C2,RC2),
-    imprimeRenglónCasilla(1,C3,RC3),
-    imprimeRenglónCasilla(1,C4,RC4),
-    imprimeRenglónCasilla(1,C5,RC5),
     imprimeRenglónCasilla(1,C6,RC6),
+    imprimeRenglónCasilla(1,C5,RC5),
+    imprimeRenglónCasilla(1,C4,RC4),
+    imprimeRenglónCasilla(1,C3,RC3),
+    imprimeRenglónCasilla(1,C2,RC2),
+    imprimeRenglónCasilla(1,C1,RC1),
     imprimeRenglónCasilla(2,BaseJ2,RestoBaseJ2),
 
-    Resto = [[RC1,RC2,RC3,RC4,RC5,RC6],RestoBaseJ1,CasillasJ2,RestoBaseJ2],
+    Resto = [RC1,RC2,RC3,RC4,RC5,RC6,RestoBaseJ1,
+            C7,C8,C9,C10,C11,C12,RestoBaseJ2],
 
     nl.
 
 imprimeRenglónTablero(2,Tablero,Resto) :-
-    Tablero = [CasillasJ1,BaseJ1,CasillasJ2,BaseJ2],
-    CasillasJ2 = [C1,C2,C3,C4,C5,C6],
+    Tablero =   [C1,C2,C3,C4,C5,C6,BaseJ1,
+                C7,C8,C9,C10,C11,C12,BaseJ2],
 
     imprimeSangría(),
     imprimeRenglónCasilla(1,BaseJ1,RestoBaseJ1),
-    imprimeRenglónCasilla(2,C1,RC1),
-    imprimeRenglónCasilla(2,C2,RC2),
-    imprimeRenglónCasilla(2,C3,RC3),
-    imprimeRenglónCasilla(2,C4,RC4),
-    imprimeRenglónCasilla(2,C5,RC5),
-    imprimeRenglónCasilla(2,C6,RC6),
+    imprimeRenglónCasilla(2,C7,RC7),
+    imprimeRenglónCasilla(2,C8,RC8),
+    imprimeRenglónCasilla(2,C9,RC9),
+    imprimeRenglónCasilla(2,C10,RC10),
+    imprimeRenglónCasilla(2,C11,RC11),
+    imprimeRenglónCasilla(2,C12,RC12),
     imprimeRenglónCasilla(2,BaseJ2,RestoBaseJ2),
 
-    Resto = [CasillasJ1,RestoBaseJ1,[RC1,RC2,RC3,RC4,RC5,RC6],RestoBaseJ2],
+    Resto = [C1,C2,C3,C4,C5,C6,RestoBaseJ1,
+            RC7,RC8,RC9,RC10,RC11,RC12,RestoBaseJ2],
 
     nl.
 
@@ -177,11 +179,14 @@ imprimeRenglónTablero(2,Tablero,Resto) :-
 %   Este predicado recibe cualquier tablero y lo imprime a color, la estructura de un tablero
 %   es la siguiente:
 
-%   - Tablero = [CasillasJ1, BaseJ1, CasillasJ2, BaseJ2].
+%   - Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2].
+%               Casillas Jugador 1          Casillas Jugador 2
 
-%   Cada jugador tiene 6 casillas y una base, las dos se representan como una lista de tres
+%   Cada jugador tiene 6 casillas y una base, todas se representan como una lista de tres
 %   elementos que contiene la cantidad de fichas amarillas, verdes y rojas que hay en la 
-%   casilla o base respectivamente. Por ejemplo: [1,2,5].
+%   casilla o base respectivamente.
+
+%   Por ejemplo: [1,2,5] significa que hay 1 ficha amarilla, 2 verdes y 5 rojas.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -195,8 +200,10 @@ imprimeTablero(Tablero) :- nl,
     imprimeRenglónTablero(1,Resto2,Resto3),
     imprimeRenglónTablero(1,Resto3,Resto4),
 
-    Resto4 = [CasillasJ1,BaseJ1,CasillasJ2,BaseJ2],
-    Resto5 = [CasillasJ1,R3,CasillasJ2,R4],
+    nth1(7,Resto4,BaseJ1,Contexto1),
+    nth1(7,Resto5,R3,Contexto1),
+    nth1(14,Resto4,BaseJ2,Contexto2),
+    nth1(14,Resto5,R4,Contexto2),
 
     imprimeSangría(),imprimeRenglónCasilla(1,BaseJ1,R1),imprimeBorde(centro,1),imprimeRenglónCasilla(2,BaseJ2,R2), nl,
 
@@ -222,15 +229,15 @@ imprimeTablero(Tablero) :- nl,
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 tableroVacío(Tablero) :-
-    Tablero =   [[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]], % Casillas Jugador 1
+    Tablero =   [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0], % Casillas Jugador 1
                 [0,0,0],    % Base Jugador 1
-                [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]],  % Casillas Jugador 2
+                [0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],  % Casillas Jugador 2
                 [0,0,0]].   % Base Jugador 2
 
 tableroInicial(Tablero) :-
-    Tablero =   [[[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]], % Casillas Jugador 1
+    Tablero =   [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1], % Casillas Jugador 1
                 [0,0,0],    % Base Jugador 1
-                [[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]],  % Casillas Jugador 2
+                [1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],  % Casillas Jugador 2
                 [0,0,0]].   % Base Jugador 2
 
 aumentarFicha(x,Casilla,Casilla).
