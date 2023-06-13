@@ -493,3 +493,51 @@ validaJugada(Jugada,Fichas,ListaJugada) :-
     Por favor ingresa una secuencia válida o escribe s para salir del juego: ~t'),
     read_line_to_string(user_input,NuevaString),
     validaJugada(NuevaString,Fichas,ListaJugada).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                           fin/3  fin(<Tablero>,<PuntajeJ1>,<PuntajeJ2>).
+
+%   Verdadero si alguno de los jugadores ya no tiene fichas en sus casillas. Si la condición 
+%   se cumple, se calculan los puntajes.
+
+%   Los puntos de las fichas dentro de las bases se otorgan a cada jugador, mientras que los 
+%   puntos de las casillas se le dan al oponente.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+fin(Tablero,PuntajeJ1,PuntajeJ2) :-
+    V = [0,0,0], % Casilla vacía
+    Tablero = [V,V,V,V,V,V, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
+
+    J1 = [BaseJ1,C7,C8,C9,C10,C11,C12],
+    maplist(puntajeCasilla,J1,PuntajesJ1),
+    sum_list(PuntajesJ1,PuntajeJ1),
+    
+    puntajeCasilla(BaseJ2,PuntajeJ2).
+
+fin(Tablero,PuntajeJ1,PuntajeJ2) :-
+    V = [0,0,0], % Casilla vacía
+    Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, V,V,V,V,V,V, BaseJ2],
+    
+    puntajeCasilla(BaseJ1,PuntajeJ1),
+
+    J2 = [BaseJ2,C1,C2,C3,C4,C5,C6],
+    maplist(puntajeCasilla,J2,PuntajesJ2),
+    sum_list(PuntajesJ2,PuntajeJ2).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                       puntajeCasilla/2  puntajeCasilla(<Casilla>,<Puntaje>).
+
+%   Suma los puntos de la casilla considerando los siguientes valores para las fichas:
+
+%   - Amarilla:     1 punto
+%   - Verde:        5 puntos
+%   - Roja:        10 puntos
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+puntajeCasilla(Casilla,Puntaje) :-
+    Casilla = [Amarillas,Verdes,Rojas],
+    Puntaje #= Amarillas + Verdes*5 + Rojas*10.
