@@ -172,6 +172,30 @@ imprimeRenglónTablero(2,Tablero,Resto) :-
 
     nl.
 
+imprimeResultado(Puntaje,Puntaje) :-
+    ansi_format([bold,fg(green)],'~n~t R E S U L T A D O ~60|~n~n               ',[]),
+    ansi_format([bold,bg(blue)],'       Empate      ',[]),
+    format('            Jugador 1              ~w puntos~n               ',[Puntaje]),
+    ansi_format([bold,bg(magenta)],'       Empate      ',[]),
+    format('            Jugador 2              ~w puntos',[Puntaje]).
+    
+imprimeResultado(PuntajeJ1,PuntajeJ2) :-
+    (((PuntajeJ1 > PuntajeJ2) 
+    -> (Ganador = 1, Otro = 2, 
+        PuntosGanador = PuntajeJ1, PuntosOtro = PuntajeJ2,
+        Color = blue));
+    
+    ((PuntajeJ2 > PuntajeJ1) 
+    -> (Ganador = 2, Otro = 1, 
+        PuntosGanador = PuntajeJ2, PuntosOtro = PuntajeJ1,
+        Color = magenta))),
+
+    ansi_format([bold,fg(green)],'~n~t R E S U L T A D O ~60|~n~n               ',[]),
+    ansi_format([bold,bg(Color)],'      Ganador      ',[]),
+    format('            Jugador ~w              ~w puntos~n                                  ',[Ganador,PuntosGanador]),
+    format('            Jugador ~w              ~w puntos',[Otro,PuntosOtro]).
+
+
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
 %                           imprimeTablero/1  imprimeTablero(<Tablero>).
@@ -381,15 +405,20 @@ iniciaJuego() :-
     format('.
     '),
 
-    tableroInicial(T),
-    once(imprimeTablero(T)),
+    tableroInicial(TableroInicial),
+    once(imprimeTablero(TableroInicial)),
 
     % Fijar horizonte de búsqueda
 
     % Comenzar juego
-    jugar(T).
+    jugar(1,TableroInicial).
 
-jugar(Tablero) :- 
+jugar(_,Tablero) :-
+    fin(Tablero),
+    calculaPuntajes(Tablero,_,_),
+    !.
+
+jugar(1,Tablero) :-
     format('
     Escoge una casilla (1-6) o escribe s para salir del juego: ~t'),
     read_line_to_string(user_input,StringCasilla),
@@ -413,7 +442,8 @@ jugar(Tablero) :-
     % Imprimir tablero indicando jugada del agente y pasar al siguiente movimiento
     once(imprimeTablero(NT)),
 
-    jugar(NT)
+
+    jugar(1,NT)
     .
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
@@ -497,7 +527,23 @@ validaJugada(Jugada,Fichas,ListaJugada) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-%                           fin/3  fin(<Tablero>,<PuntajeJ1>,<PuntajeJ2>).
+%                                       fin/1  fin(<Tablero>).
+
+%   Verdadero si todas las casillas de uno de los jugadores están vacías.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+fin(Tablero) :-
+    V = [0,0,0], % Casilla vacía
+    Tablero = [V,V,V,V,V,V|_].
+
+fin(Tablero) :-
+    V = [0,0,0], % Casilla vacía
+    Tablero = [_,_,_,_,_,_,_, V,V,V,V,V,V,_].
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%           calculaPuntajes/3  calculaPuntajes(<Tablero>,<PuntajeJ1>,<PuntajeJ2>).
 
 %   Verdadero si alguno de los jugadores ya no tiene fichas en sus casillas. Si la condición 
 %   se cumple, se calculan los puntajes.
@@ -507,7 +553,7 @@ validaJugada(Jugada,Fichas,ListaJugada) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-fin(Tablero,PuntajeJ1,PuntajeJ2) :-
+calculaPuntajes(Tablero,PuntajeJ1,PuntajeJ2) :-
     V = [0,0,0], % Casilla vacía
     Tablero = [V,V,V,V,V,V, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
 
@@ -515,9 +561,11 @@ fin(Tablero,PuntajeJ1,PuntajeJ2) :-
     maplist(puntajeCasilla,J1,PuntajesJ1),
     sum_list(PuntajesJ1,PuntajeJ1),
     
-    puntajeCasilla(BaseJ2,PuntajeJ2).
+    puntajeCasilla(BaseJ2,PuntajeJ2),
+    
+    imprimeResultado(PuntajeJ1,PuntajeJ2).
 
-fin(Tablero,PuntajeJ1,PuntajeJ2) :-
+calculaPuntajes(Tablero,PuntajeJ1,PuntajeJ2) :-
     V = [0,0,0], % Casilla vacía
     Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, V,V,V,V,V,V, BaseJ2],
     
@@ -525,7 +573,9 @@ fin(Tablero,PuntajeJ1,PuntajeJ2) :-
 
     J2 = [BaseJ2,C1,C2,C3,C4,C5,C6],
     maplist(puntajeCasilla,J2,PuntajesJ2),
-    sum_list(PuntajesJ2,PuntajeJ2).
+    sum_list(PuntajesJ2,PuntajeJ2),
+    
+    imprimeResultado(PuntajeJ1,PuntajeJ2).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
