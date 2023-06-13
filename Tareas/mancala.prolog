@@ -18,7 +18,7 @@ cd("D:/ESCOM/IA/Fundamentos-de-Inteligencia-Artificial/Tareas").
 
 %                         colorJugador/2  colorJugador(<Jugador>,<Color>).
 
-%   Indica de qué color será el tablero de cada jugador.
+%   Indica de qué color será el lado tablero de cada jugador.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -360,3 +360,136 @@ contarFichas([X|Resto],X,Y) :-
 contarFichas([Otro|Resto],X,Z):- 
     Otro \= X,
     contarFichas(Resto,X,Z).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                           INTERFAZ
+
+%   
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+iniciaJuego() :-
+    % Saludar y mostrar tablero inicial
+    ansi_format([bold,fg(green)],'~n~t M A N C A L A ~60|~n',[]),
+    format('
+
+    Bienvenido al juego, recuerda que yo soy el '),
+    ansi_format([fg(blue),bold],'jugador 1',[]),
+    format(' y tú eres el '),
+    ansi_format([fg(magenta),bold],'jugador 2',[]),
+    format('.
+    '),
+
+    tableroInicial(T),
+    once(imprimeTablero(T)),
+
+    % Fijar horizonte de búsqueda
+
+    % Comenzar juego
+    jugar(T).
+
+jugar(Tablero) :- 
+    format('    Por favor escoge una casilla (1-6) o escribe s para salir del juego: ~t'),
+    read_line_to_string(user_input,StringCasilla),
+    
+    StringCasilla \= "s",
+    
+    % Validar y recuperar casilla
+    validaCasilla(StringCasilla,Casilla),
+    recuperaCasilla(Tablero,Casilla,Fichas,CasillaVálida),
+
+    format('
+    La casilla que escogiste tiene ~w fichas amarillas, ~w verdes y ~w rojas.~n
+    Indica en qué orden deseas que se coloquen, no utilices espacios: ',Fichas), 
+    read_line_to_string(user_input,StringJugada),
+    atom_string(Jugada,StringJugada),
+    validaJugada(Jugada,Fichas,ListaJugada),
+    once(jugada(2,CasillaVálida,ListaJugada,Tablero,NT)),
+
+    % Hacer jugada del agente
+    
+    % Imprimir tablero indicando jugada del agente y pasar al siguiente movimiento
+    once(imprimeTablero(NT)),
+
+    jugar(NT)
+    .
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%               validaCasilla/2  validaCasilla(<StringCasilla>,<Casilla>).
+
+%   Verdadero si <StringCasilla> es un número entre 1 y 6, si no lo es vuelve a solicitar un 
+%   número de casilla y lo valida.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+validaCasilla(StringCasilla,Casilla) :-
+    number_string(Casilla,StringCasilla),
+    StringCasilla \= "s",
+    Casilla in 0..6,!.
+
+validaCasilla(StringCasilla,Casilla) :-
+    StringCasilla \= "s",
+
+    format('
+    Por favor escoge una casilla válida (1-6) o escribe s para salir del juego: ~t'),
+    read_line_to_string(user_input,NuevaString),
+    validaCasilla(NuevaString,Casilla).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%       recuperaCasilla/4  recuperaCasilla(<Tablero>,<Casilla>,<Fichas>,<CasillaVálida>).
+
+%   Recupera la casilla que se le indica y verifica que no esté vacía, en caso de que lo esté
+%   vuelve a pedirla.
+
+%   Si la casilla no está vacía, devuelve la lista de fichas que contiene.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+recuperaCasilla(Tablero,Casilla,Fichas,Casilla) :-
+    ÍndiceCasilla #= Casilla + 7,
+    nth1(ÍndiceCasilla,Tablero,Fichas),
+    Fichas = [Amarillas,Verdes,Rojas],
+    CantidadFichas #= Amarillas + Verdes + Rojas,
+    CantidadFichas #> 0,!.
+
+recuperaCasilla(Tablero,_,Fichas,CasillaVálida) :-
+    format('
+    Por favor escoge una casilla válida (1-6) que no esté vacía o escribe s para salir del juego: ~t'),
+    read_line_to_string(user_input,NuevaString),
+    validaCasilla(NuevaString,Casilla),
+    recuperaCasilla(Tablero,Casilla,Fichas,CasillaVálida).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                   validaJugada/3  validaJugada(<Jugada>,<Fichas>,<ListaJugada>).
+
+%   Recibe la <Jugada> que consiste en una cadena de letras a, v y r que indican el orden en 
+%   que se repartirán las fichas. Es necesario que sean letras minúsculas.
+
+%   Verifica que la jugada sea posible comparando cantidad de fichas de cada color que están 
+%   en la casilla con las que se nombran en la jugada, si esto es verdadero devuelve la jugada
+%   en una lista.
+
+%   Si una jugada no es válida, la vuelve a solicitar y valida la nueva entrada.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+validaJugada(Jugada,Fichas,ListaJugada) :-
+    Fichas = [Amarillas,Verdes,Rojas],
+    CantidadFichas #= Amarillas + Verdes + Rojas,
+    
+    atom_chars(Jugada,ListaJugada),
+    contarFichas(ListaJugada,a,Amarillas), 
+    contarFichas(ListaJugada,v,Verdes),
+    contarFichas(ListaJugada,r,Rojas),
+    length(ListaJugada,CantidadFichas),!.
+
+validaJugada(Jugada,Fichas,ListaJugada) :-
+    Jugada \= "s",  
+    format('
+    Por favor ingresa una secuencia válida o escribe s para salir del juego: ~t'),
+    read_line_to_string(user_input,NuevaString),
+    validaJugada(NuevaString,Fichas,ListaJugada).
