@@ -390,7 +390,8 @@ iniciaJuego() :-
     jugar(T).
 
 jugar(Tablero) :- 
-    format('    Por favor escoge una casilla (1-6) o escribe s para salir del juego: ~t'),
+    format('
+    Escoge una casilla (1-6) o escribe s para salir del juego: ~t'),
     read_line_to_string(user_input,StringCasilla),
     
     StringCasilla \= "s",
@@ -433,7 +434,7 @@ validaCasilla(StringCasilla,Casilla) :-
     StringCasilla \= "s",
 
     format('
-    Por favor escoge una casilla válida (1-6) o escribe s para salir del juego: ~t'),
+    Selecciona una casilla válida (1-6) o escribe s para salir del juego: ~t'),
     read_line_to_string(user_input,NuevaString),
     validaCasilla(NuevaString,Casilla).
 
