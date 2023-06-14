@@ -343,8 +343,9 @@ modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
+jugada(JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
     Casilla in 1..6,
+    Jugada = [_|_],
 
     Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
 
@@ -352,11 +353,11 @@ jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
     (JugadorEnTurno = 2, T1 = [C7,C8,C9,C10,C11,C12,BaseJ2,C1,C2,C3,C4,C5,C6])),
 
     nth1(Casilla,T1,[Amarillas,Verdes,Rojas]),
+    CantidadFichas #= Amarillas + Verdes + Rojas,
+    length(Jugada,CantidadFichas),
     contarFichas(Jugada,a,Amarillas), 
     contarFichas(Jugada,v,Verdes),
     contarFichas(Jugada,r,Rojas),
-    CantidadFichas #= Amarillas + Verdes + Rojas,
-    length(Jugada,CantidadFichas),
 
     nth1(Casilla,T1,_,Resto),
     nth1(Casilla,T,[0,0,0],Resto),
@@ -365,9 +366,7 @@ jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
     
     ((JugadorEnTurno = 1, append(NT,[BaseJ2],NuevoTablero)) ;
     (JugadorEnTurno = 2, NT = [NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2,NC1,NC2,NC3,NC4,NC5,NC6],
-    NuevoTablero = [NC1,NC2,NC3,NC4,NC5,NC6,BaseJ1,NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2])),
-    
-    siguiente_turno(Casilla,CantidadFichas,JugadorEnTurno,JugadorSiguiente).
+    NuevoTablero = [NC1,NC2,NC3,NC4,NC5,NC6,BaseJ1,NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2])).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -376,6 +375,8 @@ jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
 
 %   Este predicado revisa si la última ficha cayó en la base del jugador en turno y determina
 %   a qué jugador le corresponde el turno que sigue.
+
+%   Funciona incluso con jugadas que dan la vuelta al tablero.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -437,7 +438,9 @@ jugar(_,Tablero) :-
     calculaPuntajes(Tablero,_,_),
     !.
 
-%jugar(1,Tablero) :-
+/* jugar(1,Tablero) :-
+
+    jugar(JugadorSiguiente,NT). */
 
 jugar(2,Tablero) :-
     format('
@@ -456,13 +459,13 @@ jugar(2,Tablero) :-
     read_line_to_string(user_input,StringJugada),
     atom_string(Jugada,StringJugada),
     validaJugada(Jugada,Fichas,ListaJugada),
-    once(jugada(2,JugadorSiguiente,CasillaVálida,ListaJugada,Tablero,NT)),
-    format('~n  Siguiente turno: Jugador ~w',[JugadorSiguiente]),
+    once(jugada(2,CasillaVálida,ListaJugada,Tablero,NT)),
     
     % Imprimir tablero
     once(imprimeTablero(NT)),
 
     % Averiguar a quién le toca en el siguiente turno
+    %jugar(JugadorSiguiente,NT)
     jugar(2,NT)
     .
 
@@ -612,3 +615,16 @@ calculaPuntajes(Tablero,PuntajeJ1,PuntajeJ2) :-
 puntajeCasilla(Casilla,Puntaje) :-
     Casilla = [Amarillas,Verdes,Rojas],
     Puntaje #= Amarillas + Verdes*5 + Rojas*10.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                            AGENTE
+
+%   
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+% jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero)
+
+generaJugada(Casilla,Jugada,Tablero,NuevoTablero) :-
+    Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
