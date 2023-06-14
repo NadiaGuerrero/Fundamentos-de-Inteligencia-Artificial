@@ -343,7 +343,7 @@ modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-jugada(JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
+jugada(JugadorEnTurno,Casilla,Jugada,Tablero,NuevoTablero) :-
     Casilla in 1..6,
     Jugada = [_|_],
 
@@ -620,11 +620,15 @@ puntajeCasilla(Casilla,Puntaje) :-
 
 %                                            AGENTE
 
-%   
-
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-% jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero)
+generaJugadas(Casilla,Tablero,Jugadas) :-
+    Casilla in 0..6,
+    nth1(Casilla,Tablero,[Amarillas,Verdes,Rojas]),
 
-generaJugada(Casilla,Jugada,Tablero,NuevoTablero) :-
-    Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
+    length(FichasAmarillas,Amarillas), maplist(=(a),FichasAmarillas),
+    length(FichasVerdes,Verdes), maplist(=(v),FichasVerdes),
+    length(FichasRojas,Rojas), maplist(=(r),FichasRojas),
+
+    append([FichasAmarillas,FichasVerdes,FichasRojas],Fichas),
+    setof(Jugada,(permutation(Fichas,Jugada)),Jugadas).
