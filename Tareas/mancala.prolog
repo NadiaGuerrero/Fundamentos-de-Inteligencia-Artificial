@@ -343,7 +343,7 @@ modificarTablero(Casilla,Jugada,Tablero,NuevoTablero) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-jugada(JugadorEnTurno,Casilla,Jugada,Tablero,NuevoTablero) :-
+jugada(JugadorEnTurno,JugadorSiguiente,Casilla,Jugada,Tablero,NuevoTablero) :-
     Casilla in 1..6,
 
     Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
@@ -365,7 +365,26 @@ jugada(JugadorEnTurno,Casilla,Jugada,Tablero,NuevoTablero) :-
     
     ((JugadorEnTurno = 1, append(NT,[BaseJ2],NuevoTablero)) ;
     (JugadorEnTurno = 2, NT = [NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2,NC1,NC2,NC3,NC4,NC5,NC6],
-    NuevoTablero = [NC1,NC2,NC3,NC4,NC5,NC6,BaseJ1,NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2])).
+    NuevoTablero = [NC1,NC2,NC3,NC4,NC5,NC6,BaseJ1,NC7,NC8,NC9,NC10,NC11,NC12,NBaseJ2])),
+    
+    siguiente_turno(Casilla,CantidadFichas,JugadorEnTurno,JugadorSiguiente).
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+%                                       siguiente_turno/4  
+%       siguiente_turno(<Casilla>,<TamañoJugada>,<JugadorEnTurno>,<JugadorSiguiente>).
+
+%   Este predicado revisa si la última ficha cayó en la base del jugador en turno y determina
+%   a qué jugador le corresponde el turno que sigue.
+
+%   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
+
+siguiente_turno(Casilla,TamañoJugada,JugadorEnTurno,JugadorEnTurno) :-
+    7 - Casilla #= TamañoJugada mod 13, !.
+
+siguiente_turno(_,_,JugadorEnTurno,JugadorSiguiente) :-
+    JugadorEnTurno = 1 
+    -> JugadorSiguiente = 2 ; JugadorSiguiente = 1.
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -398,7 +417,7 @@ iniciaJuego() :-
     ansi_format([bold,fg(green)],'~n~t M A N C A L A ~60|~n',[]),
     format('
 
-    Bienvenido al juego, recuerda que yo soy el '),
+    Bienvenido al juego, yo soy el '),
     ansi_format([fg(blue),bold],'jugador 1',[]),
     format(' y tú eres el '),
     ansi_format([fg(magenta),bold],'jugador 2',[]),
@@ -411,14 +430,16 @@ iniciaJuego() :-
     % Fijar horizonte de búsqueda
 
     % Comenzar juego
-    jugar(1,TableroInicial).
+    jugar(2,TableroInicial).
 
 jugar(_,Tablero) :-
     fin(Tablero),
     calculaPuntajes(Tablero,_,_),
     !.
 
-jugar(1,Tablero) :-
+%jugar(1,Tablero) :-
+
+jugar(2,Tablero) :-
     format('
     Escoge una casilla (1-6) o escribe s para salir del juego: ~t'),
     read_line_to_string(user_input,StringCasilla),
@@ -435,15 +456,14 @@ jugar(1,Tablero) :-
     read_line_to_string(user_input,StringJugada),
     atom_string(Jugada,StringJugada),
     validaJugada(Jugada,Fichas,ListaJugada),
-    once(jugada(2,CasillaVálida,ListaJugada,Tablero,NT)),
-
-    % Hacer jugada del agente
+    once(jugada(2,JugadorSiguiente,CasillaVálida,ListaJugada,Tablero,NT)),
+    format('~n  Siguiente turno: Jugador ~w',[JugadorSiguiente]),
     
-    % Imprimir tablero indicando jugada del agente y pasar al siguiente movimiento
+    % Imprimir tablero
     once(imprimeTablero(NT)),
 
-
-    jugar(1,NT)
+    % Averiguar a quién le toca en el siguiente turno
+    jugar(2,NT)
     .
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
