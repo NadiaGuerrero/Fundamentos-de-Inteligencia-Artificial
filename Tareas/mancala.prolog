@@ -622,8 +622,9 @@ puntajeCasilla(Casilla,Puntaje) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-generaJugadas(Casilla,Tablero,Jugadas) :-
+generaJugada(Casilla,Tablero,Jugada) :-
     Casilla in 0..6,
+    Jugada = [_|_],
     nth1(Casilla,Tablero,[Amarillas,Verdes,Rojas]),
 
     length(FichasAmarillas,Amarillas), maplist(=(a),FichasAmarillas),
@@ -631,4 +632,5 @@ generaJugadas(Casilla,Tablero,Jugadas) :-
     length(FichasRojas,Rojas), maplist(=(r),FichasRojas),
 
     append([FichasAmarillas,FichasVerdes,FichasRojas],Fichas),
-    setof(Jugada,(permutation(Fichas,Jugada)),Jugadas).
+    permutation(Fichas,Jugada).
+
