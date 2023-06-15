@@ -96,6 +96,20 @@ imprimeFichas(Color,Cantidad) :-
     NuevaCantidad #= Cantidad - 1,
     imprimeFichas(Color,NuevaCantidad).
 
+imprimeFichas([]).
+imprimeFichas([a|Resto]) :-
+    ficha(Ficha),
+    ansi_format([fg(yellow)],"~w ",[Ficha]),
+    imprimeFichas(Resto).
+imprimeFichas([v|Resto]) :-
+    ficha(Ficha),
+    ansi_format([fg(green)],"~w ",[Ficha]),
+    imprimeFichas(Resto).
+imprimeFichas([r|Resto]) :-
+    ficha(Ficha),
+    ansi_format([fg(red)],"~w ",[Ficha]),
+    imprimeFichas(Resto).
+
 imprimeRenglónCasilla(Jugador,Fichas,[0,0,0]) :-
     Fichas = [Amarillas,Verdes,Rojas],
     Amarillas + Verdes + Rojas #=< 4, % 4 es el ancho de las casillas, por lo que no puede haber más de esa cantidad en un solo renglón
@@ -195,6 +209,60 @@ imprimeResultado(PuntajeJ1,PuntajeJ2) :-
     format('            Jugador ~w              ~w puntos~n                                  ',[Ganador,PuntosGanador]),
     format('            Jugador ~w              ~w puntos',[Otro,PuntosOtro]).
 
+imprimeJugada(Casilla,Jugada) :-
+    Casilla in 1..6,
+
+    format('~n'),
+    imprimeSangría(),
+    ansi_format([fg(cyan),bold],'C A S I L L A  ',[]),
+    ansi_format([bold],'~w ',[Casilla]),
+    length(Jugada,Cantidad),
+    CasillaSiguiente #= Casilla + 1,
+    imprimeCasilla(CasillaSiguiente,Cantidad),
+
+    imprimeSangría(),
+    ansi_format([fg(green)],'F I C H A        ',[]),
+    imprimeFichas(Jugada),
+
+    format('~n').
+
+imprimeCasilla(_,0) :-
+    format('~n').
+
+imprimeCasilla(Casilla,Cantidad) :-
+    Cantidad > 0,
+    
+    ((Casilla > 0, Casilla =< 6, Imprime = Casilla) ;
+    (Casilla > 13, Casilla =< 19, Imprime #= Casilla - 13)),
+
+    ansi_format([fg(blue),bold],'~w ',[Imprime]),
+
+    SiguienteCantidad #= Cantidad - 1,
+    SiguienteCasilla #= Casilla + 1,
+    imprimeCasilla(SiguienteCasilla,SiguienteCantidad).
+
+imprimeCasilla(Casilla,Cantidad) :-
+    Cantidad > 0,
+
+    (Casilla = 7 ; Casilla = 20),
+    
+    ansi_format([bold],'~w ',['B']),
+
+    SiguienteCantidad #= Cantidad - 1,
+    SiguienteCasilla #= Casilla + 1,
+    imprimeCasilla(SiguienteCasilla,SiguienteCantidad).
+
+imprimeCasilla(Casilla,Cantidad) :-
+    Cantidad > 0,
+    
+    ((Casilla > 7, Casilla =< 13, Imprime #= Casilla - 7) ;
+    (Casilla > 20, Casilla =< 26, Imprime #= Casilla - 20)),
+
+    ansi_format([fg(magenta),bold],'~w ',[Imprime]),
+
+    SiguienteCantidad #= Cantidad - 1,
+    SiguienteCasilla #= Casilla + 1,
+    imprimeCasilla(SiguienteCasilla,SiguienteCantidad).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
@@ -439,15 +507,15 @@ jugar(_,Tablero) :-
     !.
 
 jugar(1,Tablero) :-
-    format('
-    Es mi turno~n
-    Recuerda que el tiempo de procesamiento es proporcional al horizonte de búsqueda~n'),
 
     % Encontrar mejor jugada posible
-    once(generaJugada(Casilla,Tablero,Jugada)),
+    once(generaJugada(Casilla,Tablero,Jugada)), % Aquí va la búsqueda
     jugada(1,Casilla,Jugada,Tablero,NT),
-    %imprimeTablero(NT),
 
+    % Anunciar jugada
+    imprimeJugada(Casilla,Jugada),
+
+    % Averiguar a quién le toca el siguiente turno
     length(Jugada,TamañoJugada),
     siguiente_turno(Casilla,TamañoJugada,1,JugadorSiguiente),
 
@@ -486,6 +554,15 @@ jugar(2,Tablero) :-
     % Averiguar a quién le toca en el siguiente turno
     length(ListaJugada,TamañoJugada),
     siguiente_turno(Casilla,TamañoJugada,2,JugadorSiguiente),
+
+    ((JugadorSiguiente = 1,
+    format('
+    Es mi turno~n')) ;
+
+    (JugadorSiguiente = 2,
+    format('
+    Te toca otra vez~n'))),
+
     jugar(JugadorSiguiente,NT).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
