@@ -226,14 +226,14 @@ imprimeTablero(Tablero) :- nl,
 
     nth1(7,Resto4,BaseJ1,Contexto1),
     nth1(7,Resto5,R3,Contexto1),
-    nth1(14,Resto4,BaseJ2,Contexto2),
-    nth1(14,Resto5,R4,Contexto2),
+    nth1(14,Resto5,BaseJ2,Contexto2),
+    nth1(14,RestoX,R4,Contexto2),
 
     imprimeSangría(),imprimeRenglónCasilla(1,BaseJ1,R1),imprimeBorde(centro,1),imprimeRenglónCasilla(2,BaseJ2,R2), nl,
 
     imprimeSangría(),imprimeRenglónCasilla(1,R1,R3),imprimeBorde(centro,2),imprimeRenglónCasilla(2,R2,R4), nl,
 
-    imprimeRenglónTablero(2,Resto5,Resto6),
+    imprimeRenglónTablero(2,RestoX,Resto6),
     imprimeRenglónTablero(2,Resto6,Resto7),
     imprimeRenglónTablero(2,Resto7,Resto8),
     imprimeRenglónTablero(2,Resto8,_),
@@ -438,9 +438,28 @@ jugar(_,Tablero) :-
     calculaPuntajes(Tablero,_,_),
     !.
 
-/* jugar(1,Tablero) :-
+jugar(1,Tablero) :-
+    format('
+    Es mi turno~n
+    Recuerda que el tiempo de procesamiento es proporcional al horizonte de búsqueda~n'),
 
-    jugar(JugadorSiguiente,NT). */
+    % Encontrar mejor jugada posible
+    once(generaJugada(Casilla,Tablero,Jugada)),
+    jugada(1,Casilla,Jugada,Tablero,NT),
+    %imprimeTablero(NT),
+
+    length(Jugada,TamañoJugada),
+    siguiente_turno(Casilla,TamañoJugada,1,JugadorSiguiente),
+
+    % Imprimir tablero sólo si no repite turno
+    ((JugadorSiguiente = 1,
+    format('
+    Me toca otra vez~n')) ;
+
+    (JugadorSiguiente = 2,
+    once(imprimeTablero(NT)))),
+
+    jugar(JugadorSiguiente,NT).
 
 jugar(2,Tablero) :-
     format('
@@ -465,9 +484,9 @@ jugar(2,Tablero) :-
     once(imprimeTablero(NT)),
 
     % Averiguar a quién le toca en el siguiente turno
-    %jugar(JugadorSiguiente,NT)
-    jugar(2,NT)
-    .
+    length(ListaJugada,TamañoJugada),
+    siguiente_turno(Casilla,TamañoJugada,2,JugadorSiguiente),
+    jugar(JugadorSiguiente,NT).
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
