@@ -42,3 +42,54 @@ Añadir también el predicado  _intercambia_inicio_meta_
 - PROYECTO FINAL
 
   Programar un agente jugador completo (con por lo menos una heurística auxiliar) para alguno de los tres juegos descritos en la presentación #29 Proyecto final.
+
+## Clases
+
+### Conceptos iniciales
+
+1. Presentación inicial
+2. Inteligencia, lenguaje y símbolos
+3. Pattern matching  y  Unificación
+
+### Programación Prolog
+
+4. Fundamentos de Prolog
+5. Edición de la Base de Conocimiento
+6. Razonamiento declarativo y procesamiento de listas
+7. Recolección de soluciones
+8. Razonamiento recursivo
+9. Figuras del Poker (Tarea #2)
+10. Control de backtracking
+11. Control de backtrackig 2 (Patrones de uso)
+12. El depurador de SWI-Prolog
+13. Estructuras, ciclos y diferencia de listas
+
+### Paradigma de Programación Lógica con Restricciones
+
+14. Programación Lógica con Restricciones
+15. Aritmética con restricciones
+16. Razonamiento por unificación
+17. Problemas lógicos
+18. Razonamiento con grafos
+19. EXAMEN PARCIAL
+
+### Búsqueda heurística
+
+20. Modelo de razonamiento
+21. Búsqueda ordenada
+22. Búsqueda ordenada 2
+23. Búsqueda informada
+24. Solución de laberintos
+
+### Búsqueda adversarial
+
+25. Búsqueda adversarial
+26. Podas alpha-beta
+27. Estrategia de juego
+28. Heurísticas auxiliares
+29. PROYECTO FINAL
+
+### Planificación
+
+30. Planificación estilo STRIPS
+31. Destalles de un planificador
