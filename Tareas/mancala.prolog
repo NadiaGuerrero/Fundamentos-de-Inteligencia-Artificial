@@ -5,11 +5,16 @@
 %
 %   Construir un agente jugador de mancala que sea capaz de jugar contra un oponente humano.
 %   Debe utilizar al menos una heurística auxiliar, ya sea propia o existente.
+%
+%   Predicado principal: iniciaJuego(<Horizonte>).
 
-/* 
-cd("D:/ESCOM/IA/Fundamentos-de-Inteligencia-Artificial/Tareas").
-[mancala].
- */
+%   Este predicado comienza la ejecución del juego, se le indica el valor del horizonte y se
+%   imprime el tablero inicial, para seleccionar una casilla sólo hay que escribir un número 
+%   del 1 al 6.
+
+%   Posteriormente se le preguntará en qué orden desea tirar las fichas y debe ingresar una 
+%   cadena que contenga las letras a, v y r en el orden de las fichas, cada letra corresponde 
+%   a una ficha amarilla, verde o roja.
 
 :- use_module(library(ansi_term)).
 :- use_module(library(clpfd)).
@@ -481,7 +486,9 @@ contarFichas([Otro|Resto],X,Z):-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
-iniciaJuego() :-
+iniciaJuego(H) :-
+    retractall(horizonte(_)),
+    assert(horizonte(H)),
     % Saludar y mostrar tablero inicial
     ansi_format([bold,fg(green)],'~n~t M A N C A L A ~60|~n',[]),
     format('
@@ -492,6 +499,14 @@ iniciaJuego() :-
     ansi_format([fg(magenta),bold],'jugador 2',[]),
     format('.
     '),
+
+    format('
+    En tu turno deberás escribir el número de la casilla que deseas seleccionar, yo te mostraré las
+    fichas que contiene y tú ingresarás el orden en que quieres que se repartan, escribe una cadena 
+    de letras a, v y r minúsculas sin espacios, cada una corresponde a una ficha amarilla, verde o 
+    roja respectivamente.
+    
+    Por ejemplo, para repartir una ficha de cada color puedes escribir avr, rva, arv, entre otros.~n'),
 
     tableroInicial(TableroInicial),
     once(imprimeTablero(TableroInicial)),
@@ -509,7 +524,8 @@ jugar(_,Tablero) :-
 jugar(1,Tablero) :-
 
     % Encontrar mejor jugada posible
-    once(generaJugada(Casilla,Tablero,Jugada)), % Aquí va la búsqueda
+    %once(generaJugada(Casilla,Tablero,Jugada)), % Aquí va la búsqueda
+    once(tirar(Tablero,Casilla,Jugada)),
     jugada(1,Casilla,Jugada,Tablero,NT),
 
     % Anunciar jugada
@@ -718,6 +734,86 @@ puntajeCasilla(Casilla,Puntaje) :-
 
 %   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *
 
+:- dynamic(horizonte/1).
+horizonte(4).
+
+:- dynamic(alfa/2).
+
+modificaAlfa(Tablero,Alfa) :-
+    retractall(alfa(Tablero,_)),
+    assert(alfa(Tablero,Alfa)).
+
+:- dynamic(mejorJugada/2).
+
+agregaMejorJugada([Casilla,Jugada],Aptitud) :-
+    (
+        (\+ mejorJugada([Casilla,Jugada],_));
+
+        ((mejorJugada([Casilla,Jugada],A),
+        Aptitud > A),
+        retractall(mejorJugada([Casilla,Jugada],_)))
+    ),
+
+    assert(mejorJugada([Casilla,Jugada],Aptitud)).
+
+% Este es el predicado que llama a negamax
+decisiónNegamax(Tablero,MejorJugada,Aptitud) :-
+    MejorJugada = [Casilla,Jugada],
+
+    retractall(mejorJugada(_,_)),
+    modificaAlfa(Tablero,-200),
+    
+    generaJugada(Casilla,Tablero,Jugada),
+    jugada(1,Casilla,Jugada,Tablero,NuevoTablero),
+    alfa(Tablero,A),
+    modificaAlfa(NuevoTablero,A),
+
+    length(Jugada,TamañoJugada),
+    siguiente_turno(Casilla,TamañoJugada,1,JugadorSiguiente),
+    valorNegamax(NuevoTablero,JugadorSiguiente,0,Aptitud),
+    agregaMejorJugada(MejorJugada,Aptitud).
+
+% Ve si es un estado final (o si ya se llegó al horizonte)
+% y recupera su aptitud.
+valorNegamax(Tablero,_,Profundidad,Aptitud) :-
+    (fin(Tablero) ; horizonte(Profundidad)),
+    aptitud(Tablero,Aptitud),!.
+
+% Este es negamax propiamente
+valorNegamax(Tablero,Jugador,Profundidad,Aptitud) :-
+    % Encuentra los descendientes
+    generaJugada(Casilla,Tablero,Jugada),
+    jugada(Jugador,Casilla,Jugada,Tablero,NuevoTablero),
+    % Hereda alfa a sus descendientes
+    alfa(Tablero,A),
+    modificaAlfa(NuevoTablero,A),
+    % Restricciones para el valor del descendiente
+    ((Jugador = 1, ValorNegativo #= Aptitud * 1) ;
+    (Jugador = 2, ValorNegativo #= Aptitud * -1)),
+    ValorNegativo #> A,
+
+    length(Jugada,TamañoJugada),
+    siguiente_turno(Casilla,TamañoJugada,Jugador,JugadorSiguiente),
+
+    ProfundidadSiguiente #= Profundidad+1,
+    valorNegamax(NuevoTablero,JugadorSiguiente,ProfundidadSiguiente,Aptitud),
+    modificaAlfa(Tablero,ValorNegativo).
+
+negamax(Tablero,_,Profundidad,Aptitud) :-
+    (fin(Tablero) ; horizonte(Profundidad)),
+    aptitud(Tablero,Aptitud),!.
+
+negamax(Tablero,Jugador,Profundidad,Aptitud) :-
+    
+    generaJugada(Casilla,Tablero,Jugada),
+    jugada(Jugador,Casilla,Jugada,Tablero,NuevoTablero),
+
+    length(Jugada,TamañoJugada),
+    siguiente_turno(Casilla,TamañoJugada,Jugador,JugadorSiguiente),
+    
+    ProfundidadSiguiente #= Profundidad+1,
+    negamax(NuevoTablero,JugadorSiguiente,ProfundidadSiguiente,Aptitud).
+
 generaJugada(Casilla,Tablero,Jugada) :-
     Casilla in 0..6,
     Jugada = [_|_],
@@ -730,3 +826,39 @@ generaJugada(Casilla,Tablero,Jugada) :-
     append([FichasAmarillas,FichasVerdes,FichasRojas],Fichas),
     permutation(Fichas,Jugada).
 
+tirar(Tablero,CT,JT) :-
+    horizonte(H), Tiros #= 10 * H,
+    findnsols(Tiros,C-J,generaJugada(C,Tablero,J),Lista),
+    random_member(C1-J1,Lista),
+    jugada(1,C1,J1,Tablero,T1),
+
+    random_member(C2-J2,Lista),
+    jugada(1,C2,J2,Tablero,T2),
+    
+    random_member(C3-J3,Lista),
+    jugada(1,C3,J3,Tablero,T3),
+    
+    random_member(C4-J4,Lista),
+    jugada(1,C4,J4,Tablero,T4),
+    
+    random_member(C5-J5,Lista),
+    jugada(1,C5,J5,Tablero,T5),
+
+    maplist(aptitud,[T1,T2,T3,T4,T5],A),
+    max_member(Max,A),
+    nth1(P,A,Max),
+    nth1(P,[J1,J2,J3,J4,J5],JT),
+    nth1(P,[C1,C2,C3,C4,C5],CT).
+
+aptitud(Tablero,Aptitud) :-
+    Tablero = [C1,C2,C3,C4,C5,C6, BaseJ1, C7,C8,C9,C10,C11,C12, BaseJ2],
+
+    J1 = [BaseJ1,C7,C8,C9,C10,C11,C12],
+    maplist(puntajeCasilla,J1,PuntajesJ1),
+    sum_list(PuntajesJ1,PuntajeJ1),
+
+    J2 = [BaseJ2,C1,C2,C3,C4,C5,C6],
+    maplist(puntajeCasilla,J2,PuntajesJ2),
+    sum_list(PuntajesJ2,PuntajeJ2),
+
+    Aptitud #= PuntajeJ1 - PuntajeJ2.
